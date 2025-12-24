@@ -28,21 +28,149 @@ public class HomeScreen extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        MainPanel = new javax.swing.JPanel();
+        Navbar = new javax.swing.JPanel();
+        LogoName = new javax.swing.JLabel();
+        CardsNav = new javax.swing.JButton();
+        HomeNav = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        CollectionNav = new javax.swing.JButton();
+        WelcomePanel = new javax.swing.JPanel();
+        WelcomeText = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        LoginPanel = new javax.swing.JPanel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1920, 1080));
+        getContentPane().setLayout(new java.awt.CardLayout());
+
+        MainPanel.setBackground(new java.awt.Color(255, 255, 255));
+        MainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        Navbar.setBackground(new java.awt.Color(0, 0, 0, 100));
+        Navbar.setOpaque(false);
+
+        LogoName.setBackground(new java.awt.Color(255, 255, 255));
+        LogoName.setFont(new java.awt.Font("Eras Light ITC", 1, 24)); // NOI18N
+        LogoName.setText("<html>Poké<span style=\"color:red;\">Museum</span>\n");
+        LogoName.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+
+        CardsNav.setFont(new java.awt.Font("Bauhaus 93", 0, 14)); // NOI18N
+        CardsNav.setText("Cards");
+        CardsNav.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CardsNavActionPerformed(evt);
+            }
+        });
+
+        HomeNav.setFont(new java.awt.Font("Bauhaus 93", 0, 14)); // NOI18N
+        HomeNav.setText("Home");
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/PokeLogo.png"))); // NOI18N
+
+        jTextField1.setFont(new java.awt.Font("Rockwell Extra Bold", 0, 12)); // NOI18N
+        jTextField1.setForeground(new java.awt.Color(153, 153, 153));
+        jTextField1.setText("Search...");
+        jTextField1.setMinimumSize(new java.awt.Dimension(64, 21));
+        jTextField1.setPreferredSize(new java.awt.Dimension(80, 21));
+
+        CollectionNav.setFont(new java.awt.Font("Bauhaus 93", 0, 14)); // NOI18N
+        CollectionNav.setText("Collection");
+        CollectionNav.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CollectionNavActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout NavbarLayout = new javax.swing.GroupLayout(Navbar);
+        Navbar.setLayout(NavbarLayout);
+        NavbarLayout.setHorizontalGroup(
+            NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(NavbarLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(LogoName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(130, 130, 130)
+                .addComponent(HomeNav)
+                .addGap(18, 18, 18)
+                .addComponent(CardsNav)
+                .addGap(18, 18, 18)
+                .addComponent(CollectionNav)
+                .addGap(72, 72, 72)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(131, Short.MAX_VALUE))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+        NavbarLayout.setVerticalGroup(
+            NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(NavbarLayout.createSequentialGroup()
+                .addGroup(NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LogoName, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CardsNav)
+                        .addComponent(HomeNav)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CollectionNav))
+                    .addGroup(NavbarLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel3)))
+                .addGap(34, 34, 34))
         );
+
+        MainPanel.add(Navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 980, 60));
+
+        WelcomePanel.setBackground(new java.awt.Color(255, 255, 255));
+        WelcomePanel.setOpaque(false);
+
+        WelcomeText.setFont(new java.awt.Font("Segoe UI Symbol", 1, 18)); // NOI18N
+        WelcomeText.setText("Welcome To Pokémon Card Museum");
+
+        jLabel1.setText("<html> <p style=\"font-family: Sarabun;\">In this Poké Card Museum, you can find your desired pokémons, <br> view your deck of pokémons, and also filter them with a vast category. <br> <br> Search a pokémon by its <span style =\"color: blue;\">types</span> and <span style=\"color:red;\">name</span></p>");
+
+        javax.swing.GroupLayout WelcomePanelLayout = new javax.swing.GroupLayout(WelcomePanel);
+        WelcomePanel.setLayout(WelcomePanelLayout);
+        WelcomePanelLayout.setHorizontalGroup(
+            WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(WelcomePanelLayout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addComponent(WelcomeText)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(WelcomePanelLayout.createSequentialGroup()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 12, Short.MAX_VALUE))
+        );
+        WelcomePanelLayout.setVerticalGroup(
+            WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(WelcomePanelLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(WelcomeText)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+
+        MainPanel.add(WelcomePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 420, 160));
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/allpokemons.png"))); // NOI18N
+        MainPanel.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 1010, -1));
+
+        getContentPane().add(MainPanel, "card2");
+
+        LoginPanel.setLayout(new java.awt.CardLayout());
+        getContentPane().add(LoginPanel, "card3");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void CardsNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardsNavActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CardsNavActionPerformed
+
+    private void CollectionNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CollectionNavActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CollectionNavActionPerformed
 
     /**
      * @param args the command line arguments
@@ -70,5 +198,18 @@ public class HomeScreen extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton CardsNav;
+    private javax.swing.JButton CollectionNav;
+    private javax.swing.JButton HomeNav;
+    private javax.swing.JPanel LoginPanel;
+    private javax.swing.JLabel LogoName;
+    private javax.swing.JPanel MainPanel;
+    private javax.swing.JPanel Navbar;
+    private javax.swing.JPanel WelcomePanel;
+    private javax.swing.JLabel WelcomeText;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
