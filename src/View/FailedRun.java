@@ -8,14 +8,14 @@ package View;
  *
  * @author Kuri
  */
-public class HomeScreen extends javax.swing.JFrame {
+public class FailedRun extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomeScreen.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FailedRun.class.getName());
 
     /**
      * Creates new form HomeScreen
      */
-    public HomeScreen() {
+    public FailedRun() {
         initComponents();
     }
 
@@ -34,8 +34,10 @@ public class HomeScreen extends javax.swing.JFrame {
         CardsNav = new javax.swing.JButton();
         HomeNav = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        SearchNav = new javax.swing.JTextField();
         CollectionNav = new javax.swing.JButton();
+        LoginNav = new javax.swing.JButton();
+        RegisterNav = new javax.swing.JButton();
         WelcomePanel = new javax.swing.JPanel();
         WelcomeText = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -43,7 +45,6 @@ public class HomeScreen extends javax.swing.JFrame {
         LoginPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1920, 1080));
         getContentPane().setLayout(new java.awt.CardLayout());
 
         MainPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -57,7 +58,7 @@ public class HomeScreen extends javax.swing.JFrame {
         LogoName.setText("<html>Poké<span style=\"color:red;\">Museum</span>\n");
         LogoName.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
-        CardsNav.setFont(new java.awt.Font("Bauhaus 93", 0, 14)); // NOI18N
+        CardsNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
         CardsNav.setText("Cards");
         CardsNav.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -65,24 +66,37 @@ public class HomeScreen extends javax.swing.JFrame {
             }
         });
 
-        HomeNav.setFont(new java.awt.Font("Bauhaus 93", 0, 14)); // NOI18N
+        HomeNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
         HomeNav.setText("Home");
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/PokeLogo.png"))); // NOI18N
 
-        jTextField1.setFont(new java.awt.Font("Rockwell Extra Bold", 0, 12)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(153, 153, 153));
-        jTextField1.setText("Search...");
-        jTextField1.setMinimumSize(new java.awt.Dimension(64, 21));
-        jTextField1.setPreferredSize(new java.awt.Dimension(80, 21));
+        SearchNav.setFont(new java.awt.Font("Rockwell Extra Bold", 0, 12)); // NOI18N
+        SearchNav.setForeground(new java.awt.Color(153, 153, 153));
+        SearchNav.setText("Search...");
 
-        CollectionNav.setFont(new java.awt.Font("Bauhaus 93", 0, 14)); // NOI18N
+        CollectionNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
         CollectionNav.setText("Collection");
         CollectionNav.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CollectionNavActionPerformed(evt);
             }
         });
+
+        LoginNav.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Red"));
+        LoginNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        LoginNav.setForeground(new java.awt.Color(255, 255, 255));
+        LoginNav.setText("Login");
+        LoginNav.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LoginNavActionPerformed(evt);
+            }
+        });
+
+        RegisterNav.setBackground(new java.awt.Color(102, 51, 255));
+        RegisterNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        RegisterNav.setForeground(new java.awt.Color(255, 255, 255));
+        RegisterNav.setText("Register");
 
         javax.swing.GroupLayout NavbarLayout = new javax.swing.GroupLayout(Navbar);
         Navbar.setLayout(NavbarLayout);
@@ -93,15 +107,19 @@ public class HomeScreen extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(LogoName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(130, 130, 130)
+                .addGap(100, 100, 100)
                 .addComponent(HomeNav)
                 .addGap(18, 18, 18)
                 .addComponent(CardsNav)
                 .addGap(18, 18, 18)
                 .addComponent(CollectionNav)
-                .addGap(72, 72, 72)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(131, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addComponent(SearchNav, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(RegisterNav)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(LoginNav)
+                .addGap(37, 37, 37))
         );
         NavbarLayout.setVerticalGroup(
             NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -111,12 +129,14 @@ public class HomeScreen extends javax.swing.JFrame {
                         .addComponent(LogoName, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(CardsNav)
                         .addComponent(HomeNav)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(CollectionNav))
+                        .addComponent(SearchNav, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CollectionNav)
+                        .addComponent(LoginNav)
+                        .addComponent(RegisterNav))
                     .addGroup(NavbarLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel3)))
-                .addGap(34, 34, 34))
+                .addGap(65, 65, 65))
         );
 
         MainPanel.add(Navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 980, 60));
@@ -124,7 +144,7 @@ public class HomeScreen extends javax.swing.JFrame {
         WelcomePanel.setBackground(new java.awt.Color(255, 255, 255));
         WelcomePanel.setOpaque(false);
 
-        WelcomeText.setFont(new java.awt.Font("Segoe UI Symbol", 1, 18)); // NOI18N
+        WelcomeText.setFont(new java.awt.Font("Gill Sans MT", 1, 18)); // NOI18N
         WelcomeText.setText("Welcome To Pokémon Card Museum");
 
         jLabel1.setText("<html> <p style=\"font-family: Sarabun;\">In this Poké Card Museum, you can find your desired pokémons, <br> view your deck of pokémons, and also filter them with a vast category. <br> <br> Search a pokémon by its <span style =\"color: blue;\">types</span> and <span style=\"color:red;\">name</span></p>");
@@ -134,27 +154,29 @@ public class HomeScreen extends javax.swing.JFrame {
         WelcomePanelLayout.setHorizontalGroup(
             WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(WelcomePanelLayout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addComponent(WelcomeText)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(WelcomePanelLayout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(WelcomeText, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, WelcomePanelLayout.createSequentialGroup()
+                .addGap(0, 12, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         WelcomePanelLayout.setVerticalGroup(
             WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(WelcomePanelLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
+                .addContainerGap(22, Short.MAX_VALUE)
                 .addComponent(WelcomeText)
-                .addGap(18, 18, 18)
+                .addGap(35, 35, 35)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         MainPanel.add(WelcomePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 420, 160));
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/allpokemons.png"))); // NOI18N
-        MainPanel.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 1010, -1));
+        jLabel4.setMinimumSize(new java.awt.Dimension(800, 550));
+        jLabel4.setPreferredSize(new java.awt.Dimension(700, 550));
+        MainPanel.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 990, -1));
 
         getContentPane().add(MainPanel, "card2");
 
@@ -165,12 +187,26 @@ public class HomeScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void CardsNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardsNavActionPerformed
-        // TODO add your handling code here:
+        parentPanel.removeAll();
+        parentPanel.add(LoginPanel);
+        parentPanel.repaint();
+        parentPanel.revalidate();
     }//GEN-LAST:event_CardsNavActionPerformed
 
     private void CollectionNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CollectionNavActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_CollectionNavActionPerformed
+
+    private void LoginNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNavActionPerformed
+        parentPanel.removeAll();
+        parentPanel.add(LoginPanel);
+        parentPanel.repaint();
+        parentPanel.revalidate();
+    }//GEN-LAST:event_LoginNavActionPerformed
+
+    private void LoginNav1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNav1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_LoginNav1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -194,22 +230,35 @@ public class HomeScreen extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new HomeScreen().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new FailedRun().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CardsNav;
     private javax.swing.JButton CollectionNav;
     private javax.swing.JButton HomeNav;
+    private javax.swing.JButton LoginNav;
+    private javax.swing.JButton LoginNav1;
     private javax.swing.JPanel LoginPanel;
     private javax.swing.JLabel LogoName;
+    private javax.swing.JLabel LogoName1;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JPanel Navbar;
+    private javax.swing.JButton RegisterNav;
+    private javax.swing.JTextField SearchNav;
     private javax.swing.JPanel WelcomePanel;
     private javax.swing.JLabel WelcomeText;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JTextField jTextField2;
+    private javax.swing.JPanel parentPanel;
     // End of variables declaration//GEN-END:variables
 }

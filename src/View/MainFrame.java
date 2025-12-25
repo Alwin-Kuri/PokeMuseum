@@ -28,21 +28,291 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        parentPanel = new javax.swing.JPanel();
+        MainPanel = new javax.swing.JPanel();
+        Navbar = new javax.swing.JPanel();
+        LogoName = new javax.swing.JLabel();
+        CardsNav = new javax.swing.JButton();
+        HomeNav = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        SearchNav = new javax.swing.JTextField();
+        CollectionNav = new javax.swing.JButton();
+        LoginNav = new javax.swing.JButton();
+        RegisterNav = new javax.swing.JButton();
+        WelcomePanel = new javax.swing.JPanel();
+        WelcomeText = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        LoginPanel = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jTextField2 = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jPasswordField1 = new javax.swing.JPasswordField();
+        LoginNav1 = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        LogoName1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(980, 550));
+
+        parentPanel.setLayout(new java.awt.CardLayout());
+
+        MainPanel.setBackground(new java.awt.Color(255, 255, 255));
+        MainPanel.setName(""); // NOI18N
+        MainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        Navbar.setBackground(new java.awt.Color(0, 0, 0, 100));
+        Navbar.setOpaque(false);
+
+        LogoName.setBackground(new java.awt.Color(255, 255, 255));
+        LogoName.setFont(new java.awt.Font("Eras Light ITC", 1, 24)); // NOI18N
+        LogoName.setText("<html>Poké<span style=\"color:red;\">Museum</span>\n");
+        LogoName.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+
+        CardsNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        CardsNav.setText("Cards");
+        CardsNav.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CardsNavActionPerformed(evt);
+            }
+        });
+
+        HomeNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        HomeNav.setText("Home");
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/PokeLogo.png"))); // NOI18N
+
+        SearchNav.setFont(new java.awt.Font("Rockwell Extra Bold", 0, 12)); // NOI18N
+        SearchNav.setForeground(new java.awt.Color(153, 153, 153));
+        SearchNav.setText("Search...");
+
+        CollectionNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        CollectionNav.setText("Collection");
+        CollectionNav.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CollectionNavActionPerformed(evt);
+            }
+        });
+
+        LoginNav.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Red"));
+        LoginNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        LoginNav.setForeground(new java.awt.Color(255, 255, 255));
+        LoginNav.setText("Login");
+        LoginNav.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LoginNavActionPerformed(evt);
+            }
+        });
+
+        RegisterNav.setBackground(new java.awt.Color(102, 51, 255));
+        RegisterNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        RegisterNav.setForeground(new java.awt.Color(255, 255, 255));
+        RegisterNav.setText("Register");
+
+        javax.swing.GroupLayout NavbarLayout = new javax.swing.GroupLayout(Navbar);
+        Navbar.setLayout(NavbarLayout);
+        NavbarLayout.setHorizontalGroup(
+            NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(NavbarLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(LogoName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(100, 100, 100)
+                .addComponent(HomeNav)
+                .addGap(18, 18, 18)
+                .addComponent(CardsNav)
+                .addGap(18, 18, 18)
+                .addComponent(CollectionNav)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addComponent(SearchNav, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(RegisterNav)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(LoginNav)
+                .addGap(37, 37, 37))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+        NavbarLayout.setVerticalGroup(
+            NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(NavbarLayout.createSequentialGroup()
+                .addGroup(NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LogoName, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CardsNav)
+                        .addComponent(HomeNav)
+                        .addComponent(SearchNav, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CollectionNav)
+                        .addComponent(LoginNav)
+                        .addComponent(RegisterNav))
+                    .addGroup(NavbarLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel3)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        MainPanel.add(Navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 980, 60));
+
+        WelcomePanel.setBackground(new java.awt.Color(255, 255, 255));
+        WelcomePanel.setOpaque(false);
+
+        WelcomeText.setFont(new java.awt.Font("Gill Sans MT", 1, 18)); // NOI18N
+        WelcomeText.setText("Welcome To Pokémon Card Museum");
+
+        jLabel1.setText("<html> <p style=\"font-family: Sarabun;\">In this Poké Card Museum, you can find your desired pokémons, <br> view your deck of pokémons, and also filter them with a vast category. <br> <br> Search a pokémon by its <span style =\"color: blue;\">types</span> and <span style=\"color:red;\">name</span></p>");
+
+        javax.swing.GroupLayout WelcomePanelLayout = new javax.swing.GroupLayout(WelcomePanel);
+        WelcomePanel.setLayout(WelcomePanelLayout);
+        WelcomePanelLayout.setHorizontalGroup(
+            WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(WelcomePanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, WelcomePanelLayout.createSequentialGroup()
+                        .addComponent(WelcomeText, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, WelcomePanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
+        );
+        WelcomePanelLayout.setVerticalGroup(
+            WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(WelcomePanelLayout.createSequentialGroup()
+                .addContainerGap(22, Short.MAX_VALUE)
+                .addComponent(WelcomeText)
+                .addGap(41, 41, 41)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        MainPanel.add(WelcomePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 420, 160));
+
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/allpokemons.png"))); // NOI18N
+        jLabel9.setMinimumSize(new java.awt.Dimension(800, 550));
+        jLabel9.setPreferredSize(new java.awt.Dimension(700, 550));
+        MainPanel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 1000, -1));
+
+        parentPanel.add(MainPanel, "Home");
+
+        LoginPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(3, 3, 3, 3, new javax.swing.ImageIcon(getClass().getResource("/utils/stareatwatertypepokemon.jpg")))); // NOI18N
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/loginUI.jpg"))); // NOI18N
+
+        jLabel6.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 18)); // NOI18N
+        jLabel6.setText("Login to your account");
+
+        jLabel7.setText("Email");
+
+        jTextField2.setToolTipText("johndoe@gmail.com");
+
+        jLabel8.setText("Password");
+
+        jPasswordField1.setText("jPasswordField1");
+
+        LoginNav1.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Red"));
+        LoginNav1.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        LoginNav1.setForeground(new java.awt.Color(255, 255, 255));
+        LoginNav1.setText("Login");
+        LoginNav1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LoginNav1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addContainerGap(56, Short.MAX_VALUE)
+                                .addComponent(jLabel6))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(31, 31, 31)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jPasswordField1)
+                                    .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.TRAILING))))
+                        .addGap(45, 45, 45))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(95, 95, 95)
+                        .addComponent(LoginNav1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(jLabel6)
+                .addGap(29, 29, 29)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35)
+                .addComponent(LoginNav1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(38, Short.MAX_VALUE))
+        );
+
+        LoginPanel.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 100, 540, 340));
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/PokeLogo.png"))); // NOI18N
+        LoginPanel.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, -1, -1));
+
+        LogoName1.setBackground(new java.awt.Color(255, 255, 255));
+        LogoName1.setFont(new java.awt.Font("Eras Light ITC", 1, 24)); // NOI18N
+        LogoName1.setText("<html><span style=\"color:white;\">Poké</span><span style=\"color:red;\">Museum</span>\n");
+        LogoName1.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        LoginPanel.add(LogoName1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 40, -1, 62));
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/coolblue.png"))); // NOI18N
+        LoginPanel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
+        parentPanel.add(LoginPanel, "Login");
+
+        getContentPane().add(parentPanel, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void LoginNav1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNav1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_LoginNav1ActionPerformed
+
+    private void CardsNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardsNavActionPerformed
+        parentPanel.removeAll();
+        parentPanel.add(LoginPanel);
+        parentPanel.repaint();
+        parentPanel.revalidate();
+    }//GEN-LAST:event_CardsNavActionPerformed
+
+    private void CollectionNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CollectionNavActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CollectionNavActionPerformed
+
+    private void LoginNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNavActionPerformed
+        parentPanel.removeAll();
+        parentPanel.add(LoginPanel);
+        parentPanel.repaint();
+        parentPanel.revalidate();
+    }//GEN-LAST:event_LoginNavActionPerformed
 
     /**
      * @param args the command line arguments
@@ -70,5 +340,32 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton CardsNav;
+    private javax.swing.JButton CollectionNav;
+    private javax.swing.JButton HomeNav;
+    private javax.swing.JButton LoginNav;
+    private javax.swing.JButton LoginNav1;
+    private javax.swing.JPanel LoginPanel;
+    private javax.swing.JLabel LogoName;
+    private javax.swing.JLabel LogoName1;
+    private javax.swing.JPanel MainPanel;
+    private javax.swing.JPanel Navbar;
+    private javax.swing.JButton RegisterNav;
+    private javax.swing.JTextField SearchNav;
+    private javax.swing.JPanel WelcomePanel;
+    private javax.swing.JLabel WelcomeText;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JTextField jTextField2;
+    private javax.swing.JPanel parentPanel;
     // End of variables declaration//GEN-END:variables
 }
