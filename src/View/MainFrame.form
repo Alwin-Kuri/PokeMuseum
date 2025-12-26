@@ -396,7 +396,7 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel7">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Email"/>
+                    <Property name="text" type="java.lang.String" value="Username"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="jTextField2">
@@ -410,9 +410,6 @@
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JPasswordField" name="jPasswordField1">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="jPasswordField1"/>
-                  </Properties>
                 </Component>
                 <Component class="javax.swing.JButton" name="LoginNav1">
                   <Properties>
@@ -990,7 +987,7 @@
                               <EmptySpace pref="42" max="32767" attributes="0"/>
                               <Component id="SearchNav1" min="-2" pref="138" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="111" max="-2" attributes="0"/>
-                              <Component id="LoginNav3" min="-2" max="-2" attributes="0"/>
+                              <Component id="logoutNav1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="37" pref="37" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1005,7 +1002,7 @@
                                       <Component id="HomeNav1" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="SearchNav1" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="CollectionNav1" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="LoginNav3" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="logoutNav1" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1086,10 +1083,10 @@
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CollectionNav1ActionPerformed"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JButton" name="LoginNav3">
+                    <Component class="javax.swing.JButton" name="logoutNav1">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                          <Color blue="99" green="99" red="ff" type="rgb"/>
+                          <Color blue="66" green="66" red="ff" type="rgb"/>
                         </Property>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                           <Font name="Gill Sans Ultra Bold Condensed" size="14" style="0"/>
@@ -1100,7 +1097,7 @@
                         <Property name="text" type="java.lang.String" value="Logout"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LoginNav3ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="logoutNav1ActionPerformed"/>
                       </Events>
                     </Component>
                   </SubComponents>
@@ -1239,8 +1236,18 @@
                             </Property>
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                               <Table columnCount="6" rowCount="4">
-                                <Column editable="true" title="PokeID" type="java.lang.Object"/>
-                                <Column editable="true" title="Name" type="java.lang.Object"/>
+                                <Column editable="true" title="PokeID" type="java.lang.Object">
+                                  <Data value="1"/>
+                                  <Data value="2"/>
+                                  <Data value="3"/>
+                                  <Data value="4"/>
+                                </Column>
+                                <Column editable="true" title="Name" type="java.lang.Object">
+                                  <Data value="Pika"/>
+                                  <Data value="Chari"/>
+                                  <Data value="Bulba"/>
+                                  <Data value="Squirtle"/>
+                                </Column>
                                 <Column editable="true" title="Type" type="java.lang.Object"/>
                                 <Column editable="true" title="Rarity" type="java.lang.Object"/>
                                 <Column editable="true" title="Condition" type="java.lang.Object"/>
@@ -1282,6 +1289,7 @@
                               </TableColumnModel>
                             </Property>
                             <Property name="focusable" type="boolean" value="false"/>
+                            <Property name="rowHeight" type="int" value="30"/>
                             <Property name="selectionBackground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="cc" green="cc" red="ff" type="rgb"/>
                             </Property>

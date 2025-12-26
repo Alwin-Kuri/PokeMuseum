@@ -8,8 +8,13 @@ package View;
  *
  * @author Kuri
  */
+import Controller.CardController;
+import Model.PokeCard;
+import Model.CardCollection;
+import Model.User;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 public class MainFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
@@ -17,8 +22,38 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
+    //for login
+    private User user;
+    private boolean isLoggedIn = false;
+    private String currentUserRole = "";
+    
+    //for card operations
+    private CardController controller;
+    
     public MainFrame() {
         initComponents();
+        
+        //Initialize card controller for sample cards
+        controller = new CardController();
+        
+        //innitializing user for user data
+        user = new User();
+    }
+    
+    private void refreshCardTable() {
+        DefaultTableModel model = (DefaultTableModel) pokeTable.getModel();
+        model.setRowCount(0); // Clear table
+
+        for (PokeCard card : controller.readAllCards()) {
+            model.addRow(new Object[]{
+                card.getId(),
+                card.getName(),
+                card.getType(),
+                card.getRarity(),
+                card.getCondition(),
+                card.getValue()
+            });
+        }
     }
 
     /**
@@ -93,7 +128,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         SearchNav1 = new javax.swing.JTextField();
         CollectionNav1 = new javax.swing.JButton();
-        LoginNav3 = new javax.swing.JButton();
+        logoutNav1 = new javax.swing.JButton();
         collectiongrid = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         addNewCard = new javax.swing.JButton();
@@ -296,13 +331,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 18)); // NOI18N
         jLabel6.setText("Login to your account");
 
-        jLabel7.setText("Email");
+        jLabel7.setText("Username");
 
         jTextField2.setToolTipText("johndoe@gmail.com");
 
         jLabel8.setText("Password");
-
-        jPasswordField1.setText("jPasswordField1");
 
         LoginNav1.setBackground(new java.awt.Color(255, 102, 102));
         LoginNav1.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
@@ -665,13 +698,13 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        LoginNav3.setBackground(new java.awt.Color(255, 153, 153));
-        LoginNav3.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
-        LoginNav3.setForeground(new java.awt.Color(255, 255, 255));
-        LoginNav3.setText("Logout");
-        LoginNav3.addActionListener(new java.awt.event.ActionListener() {
+        logoutNav1.setBackground(new java.awt.Color(255, 102, 102));
+        logoutNav1.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        logoutNav1.setForeground(new java.awt.Color(255, 255, 255));
+        logoutNav1.setText("Logout");
+        logoutNav1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                LoginNav3ActionPerformed(evt);
+                logoutNav1ActionPerformed(evt);
             }
         });
 
@@ -693,7 +726,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addComponent(SearchNav1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(111, 111, 111)
-                .addComponent(LoginNav3)
+                .addComponent(logoutNav1)
                 .addGap(37, 37, 37))
         );
         Navbar1Layout.setVerticalGroup(
@@ -706,7 +739,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(HomeNav1)
                         .addComponent(SearchNav1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(CollectionNav1)
-                        .addComponent(LoginNav3))
+                        .addComponent(logoutNav1))
                     .addGroup(Navbar1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel17)))
@@ -749,16 +782,17 @@ public class MainFrame extends javax.swing.JFrame {
         pokeTable.setFont(new java.awt.Font("Nirmala Text Semilight", 0, 12)); // NOI18N
         pokeTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {"1", "Pika", null, null, null, null},
+                {"2", "Chari", null, null, null, null},
+                {"3", "Bulba", null, null, null, null},
+                {"4", "Squirtle", null, null, null, null}
             },
             new String [] {
                 "PokeID", "Name", "Type", "Rarity", "Condition", "Value"
             }
         ));
         pokeTable.setFocusable(false);
+        pokeTable.setRowHeight(30);
         pokeTable.setSelectionBackground(new java.awt.Color(255, 204, 204));
         pokeTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(pokeTable);
@@ -1118,10 +1152,35 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void LoginNav1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNav1ActionPerformed
+        String username = jTextField2.getText().trim();
+        String password = new String(jPasswordField1.getPassword());
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Please enter both username and password!", 
+                "Empty Fields", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (user.validateLogin(username, password)) {
+            isLoggedIn = true;
+            currentUserRole = user.getUserRole(username);
+        
+            JOptionPane.showMessageDialog(this, 
+                "Welcome, " + username, 
+                "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+
+        //successful login = go to dashboard
         parentPanel.removeAll();
         parentPanel.add(dashHomePanel);
-        parentPanel.repaint();
         parentPanel.revalidate();
+        parentPanel.repaint();
+
+        } else {
+            JOptionPane.showMessageDialog(this, 
+                "Invalid username or password!", 
+                "Login Failed", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_LoginNav1ActionPerformed
 
     private void CardsNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardsNavActionPerformed
@@ -1145,8 +1204,8 @@ public class MainFrame extends javax.swing.JFrame {
     private void LoginNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNavActionPerformed
         parentPanel.removeAll();
         parentPanel.add(loginPanel);
-        parentPanel.repaint();
         parentPanel.revalidate();
+        parentPanel.repaint();
     }//GEN-LAST:event_LoginNavActionPerformed
 
     private void LoginNav2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNav2ActionPerformed
@@ -1187,8 +1246,8 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_CollectionNav1ActionPerformed
 
-    private void LoginNav3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNav3ActionPerformed
-        ImageIcon pokeIcon = new ImageIcon(getClass().getResource("/utils/PokeLogo.png"));
+    private void logoutNav1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutNav1ActionPerformed
+    ImageIcon pokeIcon = new ImageIcon(getClass().getResource("/utils/PokeLogo.png"));
         int confirm = JOptionPane.showConfirmDialog(this, 
             "Are you sure you want to logout?", 
             "Logout Confirmation", 
@@ -1197,29 +1256,53 @@ public class MainFrame extends javax.swing.JFrame {
             pokeIcon);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            //user = yes = logout
-        
-            //switch back to Home
+            isLoggedIn = false; //reset login state
+            currentUserRole = "";
+
             parentPanel.removeAll();
-            parentPanel.add(mainPanel);
+            parentPanel.add(mainPanel); //back to public home
             parentPanel.revalidate();
             parentPanel.repaint();
-        
+
             JOptionPane.showMessageDialog(this, "You have been logged out successfully!", 
                 "Logged Out", JOptionPane.INFORMATION_MESSAGE);
         }
-        //If no or cancel it stays on the current screen
-    }//GEN-LAST:event_LoginNav3ActionPerformed
+    }//GEN-LAST:event_logoutNav1ActionPerformed
 
     private void addNewCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewCardActionPerformed
         collectionPanel.removeAll();
         collectionPanel.add(addCardPanel);
         collectionPanel.repaint();
-        collectionPanel.revalidate(); 
+        collectionPanel.revalidate();
+        
+        //Clear form fields for new entry
+        idTF.setText("");
+        nameTF.setText("");
+        typeCB.setSelectedIndex(0);
+        rarityCB.setSelectedIndex(0);
+        conditionCB.setSelectedIndex(0);
+        valueTF.setText("");
     }//GEN-LAST:event_addNewCardActionPerformed
 
     private void deleteCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteCardActionPerformed
-        // TODO add your handling code here:
+        int row = pokeTable.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a card to delete!", "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        DefaultTableModel model = (DefaultTableModel) pokeTable.getModel();
+        String id = (String) model.getValueAt(row, 0);
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete card " + id + "?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                controller.deleteCard(id);
+                refreshCardTable();
+                JOptionPane.showMessageDialog(this, "Card deleted!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_deleteCardActionPerformed
 
     private void HomeNav1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeNav1ActionPerformed
@@ -1234,10 +1317,30 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_idTFActionPerformed
 
     private void saveCardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCardBtnActionPerformed
-        collectionPanel.removeAll();
-        collectionPanel.add(cgPanel);
-        collectionPanel.repaint();
-        collectionPanel.revalidate();        
+        try {
+            String id = idTF.getText().trim();
+            String name = nameTF.getText().trim();
+            String type = (String) typeCB.getSelectedItem();
+            String rarity = (String) rarityCB.getSelectedItem();
+            String condition = (String) conditionCB.getSelectedItem();
+            double value = Double.parseDouble(valueTF.getText().trim());
+
+            controller.createCard(id, name, type, rarity, condition, value);
+
+            JOptionPane.showMessageDialog(this, "Card added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Back to grid and refresh
+            collectionPanel.removeAll();
+            collectionPanel.add(cgPanel); // or your grid panel
+            collectionPanel.revalidate();
+            collectionPanel.repaint();
+            refreshCardTable();
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Value must be a valid number!", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
+        }      
     }//GEN-LAST:event_saveCardBtnActionPerformed
 
     private void cancelAddBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelAddBtnActionPerformed
@@ -1252,18 +1355,60 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_idTF1ActionPerformed
 
     private void cancelAddBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelAddBtn1ActionPerformed
-        // TODO add your handling code here:
+        collectionPanel.removeAll();
+        collectionPanel.add(cgPanel);
+        collectionPanel.repaint();
+        collectionPanel.revalidate(); 
     }//GEN-LAST:event_cancelAddBtn1ActionPerformed
 
     private void saveCardBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCardBtn1ActionPerformed
-        // TODO add your handling code here:
+        try {
+            String id = idTF1.getText().trim();
+            String name = nameTF1.getText().trim();
+            String type = (String) typeCB1.getSelectedItem();
+            String rarity = (String) rarityCB1.getSelectedItem();
+            String condition = (String) conditionCB1.getSelectedItem();
+            double value = Double.parseDouble(valueTF1.getText().trim());
+
+            controller.updateCard(id, name, type, rarity, condition, value);
+
+            JOptionPane.showMessageDialog(this, "Card updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Back to grid
+            collectionPanel.removeAll();
+            collectionPanel.add(cgPanel);
+            collectionPanel.revalidate();
+            collectionPanel.repaint();
+            refreshCardTable();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_saveCardBtn1ActionPerformed
 
     private void editCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCardActionPerformed
+        int row = pokeTable.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, 
+                "Please select a card to edit!", 
+                "No Selection", 
+                JOptionPane.WARNING_MESSAGE);
+            return; // Stop if nothing selected
+        }
+        DefaultTableModel model = (DefaultTableModel) pokeTable.getModel();
+        // Fill the edit form with selected card data
+        idTF1.setText((String) model.getValueAt(row, 0));
+        nameTF1.setText((String) model.getValueAt(row, 1));
+        typeCB1.setSelectedItem(model.getValueAt(row, 2));
+        rarityCB1.setSelectedItem(model.getValueAt(row, 3));
+        conditionCB1.setSelectedItem(model.getValueAt(row, 4));
+        valueTF1.setText(model.getValueAt(row, 5).toString());
+
+        // Switch to Edit panel
         collectionPanel.removeAll();
         collectionPanel.add(editCardPanel);
+        collectionPanel.revalidate();
         collectionPanel.repaint();
-        collectionPanel.revalidate(); 
     }//GEN-LAST:event_editCardActionPerformed
 
     private void CardsNav2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardsNav2ActionPerformed
@@ -1280,6 +1425,8 @@ public class MainFrame extends javax.swing.JFrame {
         parentPanel.add(collectionPanel);
         parentPanel.repaint();
         parentPanel.revalidate();
+        
+        refreshCardTable();
     }//GEN-LAST:event_CollectionNav2ActionPerformed
 
     private void logoutNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutNavActionPerformed
@@ -1292,6 +1439,8 @@ public class MainFrame extends javax.swing.JFrame {
             pokeIcon);
 
         if (confirm == JOptionPane.YES_OPTION) {
+            isLoggedIn = false;
+            currentUserRole = "";
             //user = yes = logout
         
             //switch back to Home
@@ -1344,7 +1493,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton LoginNav;
     private javax.swing.JButton LoginNav1;
     private javax.swing.JButton LoginNav2;
-    private javax.swing.JButton LoginNav3;
     private javax.swing.JLabel LogoName;
     private javax.swing.JLabel LogoName1;
     private javax.swing.JLabel LogoName2;
@@ -1428,6 +1576,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JPanel loginPanel;
     private javax.swing.JButton logoutNav;
+    private javax.swing.JButton logoutNav1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JTextField nameTF;
     private javax.swing.JTextField nameTF1;
