@@ -34,10 +34,10 @@ public class CardCollection {
         if (hasDuplicateId(card.getId())) {
             throw new IllegalArgumentException("Duplicate ID not allowed");
         }
-        mainCollection.add(card);  // Add to ArrayList
-        recentAdds.addFirst(card); // Add to front of LinkedList (recent first)
+        mainCollection.add(card);  //adds the card to arraylist
+        recentAdds.addFirst(card); //adds to the front of LinkedList
         if (recentAdds.size() > 5) {
-            recentAdds.removeLast(); // Keep only last 5
+            recentAdds.removeLast();
         }
     }
 
@@ -53,7 +53,7 @@ public class CardCollection {
         boolean found = false;
         for (int i = 0; i < mainCollection.size(); i++) {
             if (mainCollection.get(i).getId().equals(updatedCard.getId())) {
-                mainCollection.set(i, updatedCard);  // Update in ArrayList
+                mainCollection.set(i, updatedCard);  //updates in arraylist
                 found = true;
                 break;
             }
@@ -61,7 +61,6 @@ public class CardCollection {
         if (!found) {
             throw new IllegalArgumentException("Card ID not found for update");
         }
-        // Update in recentAdds if present (optional, as recentAdds is for adds only)
     }
 
     /**
@@ -73,7 +72,7 @@ public class CardCollection {
         boolean found = false;
         for (int i = 0; i < mainCollection.size(); i++) {
             if (mainCollection.get(i).getId().equals(id)) {
-                mainCollection.remove(i);  // Remove from ArrayList
+                mainCollection.remove(i);  //removes it from arraylist
                 found = true;
                 break;
             }
@@ -81,7 +80,7 @@ public class CardCollection {
         if (!found) {
             throw new IllegalArgumentException("Card ID not found for deletion");
         }
-        // Remove from recentAdds if present
+        //then remove from recentAdds if its present
         recentAdds.removeIf(card -> card.getId().equals(id));
     }
 
@@ -90,7 +89,7 @@ public class CardCollection {
      * @return List of all cards (unmodifiable to prevent external changes).
      */
     public List<PokeCard> getAllCards() {
-        return List.copyOf(mainCollection);  // Return copy for safety
+        return List.copyOf(mainCollection);  //return copy for safety
     }
 
     /**

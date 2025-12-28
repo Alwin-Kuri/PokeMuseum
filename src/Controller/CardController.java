@@ -49,8 +49,7 @@ public class CardController {
         validateRarity(rarity);
         validateCondition(condition);
         validateValue(value);
-        // Additional year validation if year was part of card (assuming year is part of ID or separate; adjust if needed)
-        // For now, assuming year is parsed from ID or separate field; add if needed: validateYear(year);
+        //for first milestone, assuming year is parsed from ID or separate field (not in action rn)
 
         PokeCard card = new PokeCard(id, name, type, rarity, condition, value);
         collection.addCard(card);
@@ -118,7 +117,7 @@ public class CardController {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("ID cannot be empty");
         }
-        // Check existence (you might need to add getById in model if frequent)
+        //Check existence of the card
         boolean exists = false;
         for (PokeCard card : collection.getAllCards()) {
             if (card.getId().equals(id)) {
