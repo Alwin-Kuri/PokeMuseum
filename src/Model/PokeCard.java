@@ -15,6 +15,7 @@ public class PokeCard {
     private String rarity;//Rarity(combo box)
     private String condition;//Condition(combo box)
     private double value;//Value
+    private String imagePath; // Path to image
 
     /**
      * Constructor to create a new Pokémon card.
@@ -24,14 +25,16 @@ public class PokeCard {
      * @param rarity Rarity level of the card.
      * @param condition Condition of the card.
      * @param value Monetary value of the card.
+     * @param imagePath Path to the cards image.
      */
-    public PokeCard(String id, String name, String type, String rarity, String condition, double value) {
+    public PokeCard(String id, String name, String type, String rarity, String condition, double value, String imagePath) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.rarity = rarity;
         this.condition = condition;
         this.value = value;
+        this.imagePath = imagePath;
     }
 
     // Getters and Setters for all fields (encapsulation)
@@ -83,6 +86,14 @@ public class PokeCard {
     public void setValue(double value) {
         this.value = value;
     }
+    
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 
     /**
      * Overrides toString for easy display in JTable or debugging.
@@ -97,6 +108,7 @@ public class PokeCard {
                 ", rarity='" + rarity + '\'' +
                 ", condition='" + condition + '\'' +
                 ", value=" + value +
+                ", imagePath='" + imagePath + '\'' +
                 '}';
     }
 }

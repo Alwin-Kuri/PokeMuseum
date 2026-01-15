@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package View;
-
 /**
  *
  * @author Kuri
@@ -12,8 +11,14 @@ import Controller.CardController;
 import Model.PokeCard;
 import Model.CardCollection;
 import Model.User;
+import java.awt.Image;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 public class MainFrame extends javax.swing.JFrame {
     
@@ -24,6 +29,7 @@ public class MainFrame extends javax.swing.JFrame {
      */
     //for login
     private User user;
+    private String selectedImagePath = "";
     private boolean isLoggedIn = false;
     private String currentUserRole = "";
     
@@ -40,11 +46,14 @@ public class MainFrame extends javax.swing.JFrame {
         user = new User();
     }
     
-    private void refreshCardTable() {
+    private void refreshCardTable(List<PokeCard> cardss) {
+        if (cardss == null) {
+            cardss = new ArrayList<>();
+        }
         DefaultTableModel model = (DefaultTableModel) pokeTable.getModel();
         model.setRowCount(0); //clear table to input data
 
-        for (PokeCard card : controller.readAllCards()) {
+        for (PokeCard card : cardss) {
             model.addRow(new Object[]{
                 card.getId(),
                 card.getName(),
@@ -55,7 +64,40 @@ public class MainFrame extends javax.swing.JFrame {
             });
         }
     }
+    
+        /**
+     * Refreshes the dashboard stats
+     */
+    public void refreshDashboard(){
+        // 1. Total number of cards
+        int totalCards = controller.getTotalCards();
+        totalCardsLabel.setText(String.format("%.2f",totalCards));
 
+        // 2. Total value of inventory
+        double totalValueSum = controller.getTotalValue();
+        totalValueLabel.setText(String.format("%.2f", totalValueSum));
+
+        // 3. Most valuable card (ID, Name, Value)
+        PokeCard mostVal = controller.getMostValuableCard();
+        if (mostVal != null) {
+            valueCardID.setText(mostVal.getId());
+            valueCardName.setText(mostVal.getName());
+            valueCardValue.setText(String.format("%.2f", mostVal.getValue()));
+        } else {
+            valueCardID.setText("N/A");
+            valueCardName.setText("N/A");
+            valueCardValue.setText("$0.00");
+        }
+
+        // 4. Most rare card (Name + Rarity)
+        PokeCard mostRare = controller.getMostRareCard();
+        if (mostRare != null) {
+            mostRareCardLabel.setText(mostRare.getName() + " (" + mostRare.getRarity() + ")");
+        } else {
+            mostRareCardLabel.setText("N/A");
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -74,8 +116,8 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         SearchNav = new javax.swing.JTextField();
         CollectionNav = new javax.swing.JButton();
-        LoginNav = new javax.swing.JButton();
         RegisterNav = new javax.swing.JButton();
+        LoginNav = new javax.swing.JButton();
         WelcomePanel = new javax.swing.JPanel();
         WelcomeText = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -93,18 +135,22 @@ public class MainFrame extends javax.swing.JFrame {
         LogoName1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         dashHomePanel = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel43 = new javax.swing.JLabel();
+        mostRareCardLabel = new javax.swing.JLabel();
+        recentCards = new javax.swing.JPanel();
         totalCards = new javax.swing.JPanel();
         jLabel40 = new javax.swing.JLabel();
         jLabel41 = new javax.swing.JLabel();
-        jLabel46 = new javax.swing.JLabel();
-        jLabel47 = new javax.swing.JLabel();
-        jLabel48 = new javax.swing.JLabel();
+        valueCardID = new javax.swing.JLabel();
+        valueCardName = new javax.swing.JLabel();
+        valueCardValue = new javax.swing.JLabel();
         totalValue = new javax.swing.JPanel();
         jLabel42 = new javax.swing.JLabel();
-        jLabel43 = new javax.swing.JLabel();
+        totalCardsLabel = new javax.swing.JLabel();
         ValuabelCard = new javax.swing.JPanel();
         jLabel44 = new javax.swing.JLabel();
-        jLabel45 = new javax.swing.JLabel();
+        totalValueLabel = new javax.swing.JLabel();
         Navbar2 = new javax.swing.JPanel();
         LogoName4 = new javax.swing.JLabel();
         CardsNav2 = new javax.swing.JButton();
@@ -115,19 +161,18 @@ public class MainFrame extends javax.swing.JFrame {
         logoutNav = new javax.swing.JButton();
         WelcomePanel1 = new javax.swing.JPanel();
         WelcomeText1 = new javax.swing.JLabel();
-        jLabel38 = new javax.swing.JLabel();
         jLabel39 = new javax.swing.JLabel();
         registerPanel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        registerUN = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
-        jPasswordField2 = new javax.swing.JPasswordField();
+        registerPW = new javax.swing.JPasswordField();
         LoginNav2 = new javax.swing.JButton();
         jLabel16 = new javax.swing.JLabel();
-        jPasswordField3 = new javax.swing.JPasswordField();
+        registerCPW = new javax.swing.JPasswordField();
         jLabel14 = new javax.swing.JLabel();
         LogoName2 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
@@ -138,15 +183,17 @@ public class MainFrame extends javax.swing.JFrame {
         CardsNav1 = new javax.swing.JButton();
         HomeNav1 = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
-        SearchNav1 = new javax.swing.JTextField();
+        searchTF = new javax.swing.JTextField();
         CollectionNav1 = new javax.swing.JButton();
         logoutNav1 = new javax.swing.JButton();
+        searchBtn = new javax.swing.JButton();
         collectiongrid = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         addNewCard = new javax.swing.JButton();
         editCard = new javax.swing.JButton();
         deleteCard = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        undoDelete = new javax.swing.JButton();
+        sortingCB = new javax.swing.JComboBox<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         pokeTable = new javax.swing.JTable();
         addCardPanel = new javax.swing.JPanel();
@@ -164,9 +211,11 @@ public class MainFrame extends javax.swing.JFrame {
         rarityCB = new javax.swing.JComboBox<>();
         conditionCB = new javax.swing.JComboBox<>();
         valueTF = new javax.swing.JTextField();
-        jLabel27 = new javax.swing.JLabel();
         cancelAddBtn = new javax.swing.JButton();
         saveCardBtn = new javax.swing.JButton();
+        btnChooseImage = new javax.swing.JButton();
+        jLabel54 = new javax.swing.JLabel();
+        lblImagePreview = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         editCardPanel = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -233,6 +282,16 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        RegisterNav.setBackground(new java.awt.Color(102, 102, 255));
+        RegisterNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        RegisterNav.setForeground(new java.awt.Color(255, 255, 255));
+        RegisterNav.setText("Register");
+        RegisterNav.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RegisterNavActionPerformed(evt);
+            }
+        });
+
         LoginNav.setBackground(new java.awt.Color(255, 102, 102));
         LoginNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
         LoginNav.setForeground(new java.awt.Color(255, 255, 255));
@@ -240,16 +299,6 @@ public class MainFrame extends javax.swing.JFrame {
         LoginNav.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LoginNavActionPerformed(evt);
-            }
-        });
-
-        RegisterNav.setBackground(new java.awt.Color(102, 51, 255));
-        RegisterNav.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
-        RegisterNav.setForeground(new java.awt.Color(255, 255, 255));
-        RegisterNav.setText("Register");
-        RegisterNav.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RegisterNavActionPerformed(evt);
             }
         });
 
@@ -268,13 +317,13 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(CardsNav)
                 .addGap(18, 18, 18)
                 .addComponent(CollectionNav)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(SearchNav, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(33, 33, 33)
                 .addComponent(RegisterNav)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(30, 30, 30)
                 .addComponent(LoginNav)
-                .addGap(37, 37, 37))
+                .addGap(148, 148, 148))
         );
         NavbarLayout.setVerticalGroup(
             NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -286,8 +335,8 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(HomeNav)
                         .addComponent(SearchNav, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(CollectionNav)
-                        .addComponent(LoginNav)
-                        .addComponent(RegisterNav))
+                        .addComponent(RegisterNav)
+                        .addComponent(LoginNav))
                     .addGroup(NavbarLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel3)))
@@ -429,6 +478,54 @@ public class MainFrame extends javax.swing.JFrame {
         dashHomePanel.setName(""); // NOI18N
         dashHomePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
+
+        jLabel43.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 12)); // NOI18N
+        jLabel43.setText("Most Rare Card in Inventory");
+
+        mostRareCardLabel.setText("Charizard Holo Rare");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel43))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(mostRareCardLabel)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel43)
+                .addGap(18, 18, 18)
+                .addComponent(mostRareCardLabel)
+                .addContainerGap(27, Short.MAX_VALUE))
+        );
+
+        dashHomePanel.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 410, 170, 90));
+
+        recentCards.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/gengar.png")))); // NOI18N
+
+        javax.swing.GroupLayout recentCardsLayout = new javax.swing.GroupLayout(recentCards);
+        recentCards.setLayout(recentCardsLayout);
+        recentCardsLayout.setHorizontalGroup(
+            recentCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        recentCardsLayout.setVerticalGroup(
+            recentCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        dashHomePanel.add(recentCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, 870, 110));
+
         totalCards.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
 
         jLabel40.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 12)); // NOI18N
@@ -436,11 +533,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel41.setFont(new java.awt.Font("Forte", 0, 36)); // NOI18N
 
-        jLabel46.setText("PC0001");
+        valueCardID.setText("PC0001");
 
-        jLabel47.setText("Charizard Holo Rare");
+        valueCardName.setText("Charizard Holo Rare");
 
-        jLabel48.setText("450$");
+        valueCardValue.setText("450$");
 
         javax.swing.GroupLayout totalCardsLayout = new javax.swing.GroupLayout(totalCards);
         totalCards.setLayout(totalCardsLayout);
@@ -450,14 +547,14 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addGroup(totalCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(totalCardsLayout.createSequentialGroup()
-                        .addComponent(jLabel47)
+                        .addComponent(valueCardName)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel41))
                     .addGroup(totalCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(totalCardsLayout.createSequentialGroup()
-                            .addComponent(jLabel46)
+                            .addComponent(valueCardID)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel48))
+                            .addComponent(valueCardValue))
                         .addComponent(jLabel40)))
                 .addContainerGap(33, Short.MAX_VALUE))
         );
@@ -468,24 +565,24 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel40)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(totalCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel46)
-                    .addComponent(jLabel48))
+                    .addComponent(valueCardID)
+                    .addComponent(valueCardValue))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel47)
+                .addComponent(valueCardName)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel41)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        dashHomePanel.add(totalCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 410, 240, 90));
+        dashHomePanel.add(totalCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 410, 240, 90));
 
         totalValue.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
 
         jLabel42.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 12)); // NOI18N
         jLabel42.setText("Total Cards in Inventory");
 
-        jLabel43.setFont(new java.awt.Font("Forte", 0, 36)); // NOI18N
-        jLabel43.setText("5");
+        totalCardsLabel.setFont(new java.awt.Font("Forte", 0, 36)); // NOI18N
+        totalCardsLabel.setText("5");
 
         javax.swing.GroupLayout totalValueLayout = new javax.swing.GroupLayout(totalValue);
         totalValue.setLayout(totalValueLayout);
@@ -498,7 +595,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(jLabel42))
                     .addGroup(totalValueLayout.createSequentialGroup()
                         .addGap(62, 62, 62)
-                        .addComponent(jLabel43)))
+                        .addComponent(totalCardsLabel)))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
         totalValueLayout.setVerticalGroup(
@@ -507,7 +604,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel42)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel43)
+                .addComponent(totalCardsLabel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -518,8 +615,8 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel44.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 12)); // NOI18N
         jLabel44.setText("Total Value of Inventory");
 
-        jLabel45.setFont(new java.awt.Font("Forte", 0, 36)); // NOI18N
-        jLabel45.setText("1100$");
+        totalValueLabel.setFont(new java.awt.Font("Forte", 0, 36)); // NOI18N
+        totalValueLabel.setText("1100$");
 
         javax.swing.GroupLayout ValuabelCardLayout = new javax.swing.GroupLayout(ValuabelCard);
         ValuabelCard.setLayout(ValuabelCardLayout);
@@ -528,12 +625,12 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(ValuabelCardLayout.createSequentialGroup()
                 .addGroup(ValuabelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(ValuabelCardLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel44))
-                    .addGroup(ValuabelCardLayout.createSequentialGroup()
                         .addGap(34, 34, 34)
-                        .addComponent(jLabel45)))
-                .addContainerGap(12, Short.MAX_VALUE))
+                        .addComponent(totalValueLabel))
+                    .addGroup(ValuabelCardLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel44)))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         ValuabelCardLayout.setVerticalGroup(
             ValuabelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -541,18 +638,18 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel44)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel45)
+                .addComponent(totalValueLabel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        dashHomePanel.add(ValuabelCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 410, 160, 90));
+        dashHomePanel.add(ValuabelCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 180, 90));
 
         Navbar2.setBackground(new java.awt.Color(0, 0, 0, 100));
         Navbar2.setOpaque(false);
 
         LogoName4.setBackground(new java.awt.Color(255, 255, 255));
         LogoName4.setFont(new java.awt.Font("Eras Light ITC", 1, 24)); // NOI18N
-        LogoName4.setText("<html>Poké<span style=\"color:red;\">Museum</span>\n");
+        LogoName4.setText("<html><span style=\"color:white;\">Poké</span><span style=\"color:red;\">Museum</span>\n");
         LogoName4.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
         CardsNav2.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
@@ -635,36 +732,29 @@ public class MainFrame extends javax.swing.JFrame {
         WelcomePanel1.setOpaque(false);
 
         WelcomeText1.setFont(new java.awt.Font("Gill Sans MT", 1, 18)); // NOI18N
+        WelcomeText1.setForeground(new java.awt.Color(255, 255, 255));
         WelcomeText1.setText("Welcome To Your Dashboard, Admin!");
-
-        jLabel38.setText("<html> <p style=\"font-family: Sarabun;\">In this Poké Card Museum, you can find your desired pokémons, <br> view your deck of pokémons, and also filter them with a vast category. <br> <br> Search a pokémon by its <span style =\"color: blue;\">types</span> and <span style=\"color:red;\">name</span></p>");
 
         javax.swing.GroupLayout WelcomePanel1Layout = new javax.swing.GroupLayout(WelcomePanel1);
         WelcomePanel1.setLayout(WelcomePanel1Layout);
         WelcomePanel1Layout.setHorizontalGroup(
             WelcomePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(WelcomePanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(WelcomePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, WelcomePanel1Layout.createSequentialGroup()
-                        .addComponent(WelcomeText1, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, WelcomePanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                .addGap(32, 32, 32)
+                .addComponent(WelcomeText1, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(39, Short.MAX_VALUE))
         );
         WelcomePanel1Layout.setVerticalGroup(
             WelcomePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(WelcomePanel1Layout.createSequentialGroup()
                 .addContainerGap(22, Short.MAX_VALUE)
                 .addComponent(WelcomeText1)
-                .addGap(41, 41, 41)
-                .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(116, 116, 116))
         );
 
         dashHomePanel.add(WelcomePanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 420, 160));
 
-        jLabel39.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/allpokemons.png"))); // NOI18N
+        jLabel39.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg"))); // NOI18N
         jLabel39.setMinimumSize(new java.awt.Dimension(800, 550));
         jLabel39.setPreferredSize(new java.awt.Dimension(700, 550));
         dashHomePanel.add(jLabel39, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 990, -1));
@@ -680,21 +770,20 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel11.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 18)); // NOI18N
         jLabel11.setText("Register as a new user");
 
-        jLabel12.setText("Email");
+        jLabel12.setText("Username");
 
-        jTextField3.setToolTipText("johndoe@gmail.com");
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        registerUN.setToolTipText("johndoe@gmail.com");
+        registerUN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                registerUNActionPerformed(evt);
             }
         });
 
         jLabel13.setText("Password");
 
-        jPasswordField2.setText("jPasswordField1");
-        jPasswordField2.addActionListener(new java.awt.event.ActionListener() {
+        registerPW.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jPasswordField2ActionPerformed(evt);
+                registerPWActionPerformed(evt);
             }
         });
 
@@ -710,10 +799,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel16.setText("Confirm Password");
 
-        jPasswordField3.setText("jPasswordField1");
-        jPasswordField3.addActionListener(new java.awt.event.ActionListener() {
+        registerCPW.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jPasswordField3ActionPerformed(evt);
+                registerCPWActionPerformed(evt);
             }
         });
 
@@ -731,15 +819,15 @@ public class MainFrame extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(31, 31, 31)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jPasswordField2)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(registerPW)
+                                    .addComponent(registerUN, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel16)
                                             .addComponent(jLabel12)
                                             .addComponent(jLabel13))
                                         .addGap(0, 0, Short.MAX_VALUE))
-                                    .addComponent(jPasswordField3))))
+                                    .addComponent(registerCPW))))
                         .addGap(45, 45, 45))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(83, 83, 83)
@@ -760,15 +848,15 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(registerUN, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(registerPW, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel16)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPasswordField3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(registerCPW, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(LoginNav2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -817,9 +905,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/PokeLogo.png"))); // NOI18N
 
-        SearchNav1.setFont(new java.awt.Font("Rockwell Extra Bold", 0, 12)); // NOI18N
-        SearchNav1.setForeground(new java.awt.Color(153, 153, 153));
-        SearchNav1.setText("Search...");
+        searchTF.setFont(new java.awt.Font("Rockwell Extra Bold", 0, 12)); // NOI18N
+        searchTF.setForeground(new java.awt.Color(153, 153, 153));
+        searchTF.setText("Search...");
 
         CollectionNav1.setBackground(new java.awt.Color(102, 255, 255));
         CollectionNav1.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
@@ -840,6 +928,15 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        searchBtn.setFont(new java.awt.Font("Gill Sans Ultra Bold", 0, 12)); // NOI18N
+        searchBtn.setText("Search");
+        searchBtn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        searchBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout Navbar1Layout = new javax.swing.GroupLayout(Navbar1);
         Navbar1.setLayout(Navbar1Layout);
         Navbar1Layout.setHorizontalGroup(
@@ -855,9 +952,11 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(CardsNav1)
                 .addGap(18, 18, 18)
                 .addComponent(CollectionNav1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
-                .addComponent(SearchNav1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(111, 111, 111)
+                .addGap(33, 33, 33)
+                .addComponent(searchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(searchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
                 .addComponent(logoutNav1)
                 .addGap(37, 37, 37))
         );
@@ -869,9 +968,10 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(LogoName3, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(CardsNav1)
                         .addComponent(HomeNav1)
-                        .addComponent(SearchNav1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(CollectionNav1)
-                        .addComponent(logoutNav1))
+                        .addComponent(logoutNav1)
+                        .addComponent(searchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(Navbar1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel17)))
@@ -907,8 +1007,16 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jComboBox1.setFont(new java.awt.Font("Bauhaus 93", 0, 12)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sort Collection", "PokeID Ascending", "PokeID Descending", "By Name", "By Type" }));
+        undoDelete.setFont(new java.awt.Font("Bauhaus 93", 0, 12)); // NOI18N
+        undoDelete.setText("Undo Delete");
+        undoDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                undoDeleteActionPerformed(evt);
+            }
+        });
+
+        sortingCB.setFont(new java.awt.Font("Bauhaus 93", 0, 12)); // NOI18N
+        sortingCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sort Collection", "By Name", "By Value", "By Rarity" }));
 
         pokeTable.setBackground(new java.awt.Color(204, 204, 255));
         pokeTable.setFont(new java.awt.Font("Nirmala Text Semilight", 0, 12)); // NOI18N
@@ -941,14 +1049,16 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addGap(362, 362, 362)
                                 .addComponent(jLabel18))
                             .addGroup(collectiongridLayout.createSequentialGroup()
-                                .addGap(156, 156, 156)
+                                .addGap(90, 90, 90)
                                 .addComponent(addNewCard)
-                                .addGap(75, 75, 75)
+                                .addGap(43, 43, 43)
                                 .addComponent(editCard)
-                                .addGap(88, 88, 88)
+                                .addGap(67, 67, 67)
                                 .addComponent(deleteCard)
-                                .addGap(83, 83, 83)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(52, 52, 52)
+                                .addComponent(undoDelete)
+                                .addGap(53, 53, 53)
+                                .addComponent(sortingCB, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 144, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, collectiongridLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -961,13 +1071,14 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel18)
                 .addGap(14, 14, 14)
                 .addGroup(collectiongridLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sortingCB, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(deleteCard, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(editCard, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(addNewCard, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(addNewCard, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(undoDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 371, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout cgPanelLayout = new javax.swing.GroupLayout(cgPanel);
@@ -1025,8 +1136,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         conditionCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Near Mint", "Lightly Played", "Moderately Played", "Heavily Played", "Damaged" }));
 
-        jLabel27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/pokecard.jpg"))); // NOI18N
-
         cancelAddBtn.setFont(new java.awt.Font("Bauhaus 93", 0, 14)); // NOI18N
         cancelAddBtn.setText("Cancel");
         cancelAddBtn.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new javax.swing.ImageIcon(getClass().getResource("/utils/coolblue.png")))); // NOI18N
@@ -1047,6 +1156,20 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        btnChooseImage.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        btnChooseImage.setText("Choose an Image");
+        btnChooseImage.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        btnChooseImage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChooseImageActionPerformed(evt);
+            }
+        });
+
+        jLabel54.setFont(new java.awt.Font("Gill Sans MT", 0, 14)); // NOI18N
+        jLabel54.setText(" Pokemon Card:");
+
+        lblImagePreview.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/pokecard.jpg"))); // NOI18N
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -1055,28 +1178,36 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(62, 62, 62)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel23)
-                            .addComponent(jLabel22)
-                            .addComponent(jLabel21)
-                            .addComponent(jLabel24)
-                            .addComponent(jLabel25)
-                            .addComponent(jLabel26))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel23)
+                                    .addComponent(jLabel22)
+                                    .addComponent(jLabel21)
+                                    .addComponent(jLabel24)
+                                    .addComponent(jLabel25)
+                                    .addComponent(jLabel26))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(typeCB, 0, 132, Short.MAX_VALUE)
+                                        .addComponent(valueTF))
+                                    .addComponent(nameTF, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(rarityCB, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(idTF, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(conditionCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel54)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnChooseImage, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(idTF)
-                            .addComponent(nameTF)
-                            .addComponent(typeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(rarityCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(conditionCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(valueTF))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addComponent(jLabel27)
-                        .addGap(21, 21, 21))
+                        .addComponent(lblImagePreview)
+                        .addGap(0, 22, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(29, 29, 29)
                         .addComponent(cancelAddBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(69, 69, 69)
+                        .addGap(67, 67, 67)
                         .addComponent(saveCardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(jPanel3Layout.createSequentialGroup()
@@ -1089,43 +1220,45 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(44, 44, 44)
                 .addComponent(jLabel20)
+                .addGap(31, 31, 31)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblImagePreview)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel21)
                             .addComponent(idTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel22)
                             .addComponent(nameTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(12, 12, 12)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel23)
-                            .addComponent(typeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addComponent(typeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel23))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel24)
                             .addComponent(rarityCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(12, 12, 12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel25)
                             .addComponent(conditionCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel26)
-                            .addComponent(valueTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(34, 34, 34)
-                        .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                            .addComponent(valueTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnChooseImage, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel54))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelAddBtn)
                     .addComponent(saveCardBtn))
-                .addGap(21, 21, 21))
+                .addGap(26, 26, 26))
         );
 
-        addCardPanel.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 80, 510, 390));
+        addCardPanel.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 80, 510, 400));
 
         jLabel19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/stareatwatertypepokemon.jpg"))); // NOI18N
         addCardPanel.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -1344,29 +1477,72 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_LoginNavActionPerformed
 
     private void LoginNav2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNav2ActionPerformed
-        // TODO add your handling code here:
+        String username = registerUN.getText().trim();
+        String password = new String(registerPW.getPassword()).trim();
+        String confirmPassword = new String(registerCPW.getPassword()).trim();
+
+        // Basic validation
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Username cannot be empty!", 
+                "Registration Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Password cannot be empty!", 
+                "Registration Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, 
+                "Passwords do not match!", 
+                "Registration Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Try to add the new user
+        boolean success = user.addUser(username, password);
+
+        if (success) {
+            JOptionPane.showMessageDialog(this, 
+                "Registration successful!\nYou can now login.", 
+                "Success", 
+                JOptionPane.INFORMATION_MESSAGE);
+
+            // Clear fields
+            registerUN.setText("");
+            registerPW.setText("");
+            registerCPW.setText("");
+
+            parentPanel.removeAll();
+            parentPanel.add(loginPanel);
+            parentPanel.revalidate();
+            parentPanel.repaint();
+        } else {
+            JOptionPane.showMessageDialog(this, 
+            "Registration failed!\nUsername already exists.", 
+            "Registration Error", 
+            JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_LoginNav2ActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void registerUNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerUNActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_registerUNActionPerformed
 
-    private void jPasswordField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField2ActionPerformed
+    private void registerPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerPWActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jPasswordField2ActionPerformed
+    }//GEN-LAST:event_registerPWActionPerformed
 
-    private void jPasswordField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField3ActionPerformed
+    private void registerCPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerCPWActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jPasswordField3ActionPerformed
-
-    private void RegisterNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegisterNavActionPerformed
-        ImageIcon pokeIcon = new ImageIcon(getClass().getResource("/utils/PokeLogo.png"));
-        JOptionPane.showMessageDialog(this, 
-            "We are sorry, this function is not added yet", 
-            "-PokeMuseum", 
-            JOptionPane.INFORMATION_MESSAGE,
-            pokeIcon);
-    }//GEN-LAST:event_RegisterNavActionPerformed
+    }//GEN-LAST:event_registerCPWActionPerformed
 
     private void CardsNav1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardsNav1ActionPerformed
         ImageIcon pokeIcon = new ImageIcon(getClass().getResource("/utils/PokeLogo.png"));
@@ -1432,7 +1608,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (confirm == JOptionPane.YES_OPTION) {
             try {
                 controller.deleteCard(id);
-                refreshCardTable();
+                refreshCardTable(controller.readAllCards());
                 JOptionPane.showMessageDialog(this, "Card deleted!", "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -1446,44 +1622,6 @@ public class MainFrame extends javax.swing.JFrame {
         parentPanel.repaint();
         parentPanel.revalidate();
     }//GEN-LAST:event_HomeNav1ActionPerformed
-
-    private void idTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idTFActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_idTFActionPerformed
-
-    private void saveCardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCardBtnActionPerformed
-        try {
-            String id = idTF.getText().trim();
-            String name = nameTF.getText().trim();
-            String type = (String) typeCB.getSelectedItem();
-            String rarity = (String) rarityCB.getSelectedItem();
-            String condition = (String) conditionCB.getSelectedItem();
-            double value = Double.parseDouble(valueTF.getText().trim());
-
-            controller.createCard(id, name, type, rarity, condition, value);
-
-            JOptionPane.showMessageDialog(this, "Card added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // Back to grid and refresh
-            collectionPanel.removeAll();
-            collectionPanel.add(cgPanel); // or your grid panel
-            collectionPanel.revalidate();
-            collectionPanel.repaint();
-            refreshCardTable();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Value must be a valid number!", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
-        }      
-    }//GEN-LAST:event_saveCardBtnActionPerformed
-
-    private void cancelAddBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelAddBtnActionPerformed
-        collectionPanel.removeAll();
-        collectionPanel.add(cgPanel);
-        collectionPanel.repaint();
-        collectionPanel.revalidate(); 
-    }//GEN-LAST:event_cancelAddBtnActionPerformed
 
     private void idTF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idTF1ActionPerformed
         // TODO add your handling code here:
@@ -1514,7 +1652,7 @@ public class MainFrame extends javax.swing.JFrame {
             collectionPanel.add(cgPanel);
             collectionPanel.revalidate();
             collectionPanel.repaint();
-            refreshCardTable();
+            refreshCardTable(controller.readAllCards());
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -1538,7 +1676,7 @@ public class MainFrame extends javax.swing.JFrame {
         rarityCB1.setSelectedItem(model.getValueAt(row, 3));
         conditionCB1.setSelectedItem(model.getValueAt(row, 4));
         valueTF1.setText(model.getValueAt(row, 5).toString());
-
+        
         // Switch to Edit panel
         collectionPanel.removeAll();
         collectionPanel.add(editCardPanel);
@@ -1561,7 +1699,7 @@ public class MainFrame extends javax.swing.JFrame {
         parentPanel.repaint();
         parentPanel.revalidate();
         
-        refreshCardTable();
+        refreshCardTable(controller.readAllCards());
     }//GEN-LAST:event_CollectionNav2ActionPerformed
 
     private void logoutNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutNavActionPerformed
@@ -1589,6 +1727,141 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //If no or cancel it stays on the current screen
     }//GEN-LAST:event_logoutNavActionPerformed
+
+    private void btnChooseImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseImageActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select Pokémon Card Image");
+    
+        //filter only images
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Image files", "jpg", "jpeg", "png", "gif");
+        fileChooser.setFileFilter(filter);
+    
+        int result = fileChooser.showOpenDialog(MainFrame.this);
+    
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            selectedImagePath = selectedFile.getAbsolutePath();
+
+            // Show preview
+            try {
+                ImageIcon icon = new ImageIcon(selectedImagePath);
+                Image scaled = icon.getImage().getScaledInstance(
+                    lblImagePreview.getWidth(), 
+                    lblImagePreview.getHeight(), 
+                    Image.SCALE_SMOOTH
+                );
+                lblImagePreview.setIcon(new ImageIcon(scaled));
+                lblImagePreview.setText(""); // remove "No image" text
+            } catch (Exception ex) {
+                lblImagePreview.setIcon(null);
+                lblImagePreview.setText("Cannot load image");
+                JOptionPane.showMessageDialog(MainFrame.this, 
+                    "Failed to load image preview", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnChooseImageActionPerformed
+
+    private void saveCardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCardBtnActionPerformed
+        try {
+            String id = idTF.getText().trim();
+            String name = nameTF.getText().trim();
+            String type = (String) typeCB.getSelectedItem();
+            String rarity = (String) rarityCB.getSelectedItem();
+            String condition = (String) conditionCB.getSelectedItem();
+            double value = Double.parseDouble(valueTF.getText().trim());
+            String imagePath = selectedImagePath;
+            
+            if (imagePath.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please select an image!", 
+                                         "Missing Image", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            controller.createCard(id, name, type, rarity, condition, value, imagePath);
+
+            JOptionPane.showMessageDialog(this, "Card added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Back to grid and refresh
+            collectionPanel.removeAll();
+            collectionPanel.add(cgPanel); // or your grid panel
+            collectionPanel.revalidate();
+            collectionPanel.repaint();
+            refreshCardTable(controller.readAllCards());
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Value must be a valid number!", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_saveCardBtnActionPerformed
+
+    private void cancelAddBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelAddBtnActionPerformed
+        collectionPanel.removeAll();
+        collectionPanel.add(cgPanel);
+        collectionPanel.repaint();
+        collectionPanel.revalidate();
+    }//GEN-LAST:event_cancelAddBtnActionPerformed
+
+    private void idTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_idTFActionPerformed
+
+    private void undoDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoDeleteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_undoDeleteActionPerformed
+
+    private void RegisterNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegisterNavActionPerformed
+        parentPanel.removeAll();
+        parentPanel.add(registerPanel);
+        parentPanel.revalidate();
+        parentPanel.repaint();
+        
+        userTF.setText("");
+        passwordField.setText("");
+    }//GEN-LAST:event_RegisterNavActionPerformed
+
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
+        String query = searchTF.getText().trim();
+    
+        if (query.isEmpty()) {
+            refreshCardTable(controller.readAllCards());  // show all
+            return;
+        }
+
+        List<PokeCard> results = new ArrayList<>();
+
+        // Step 1: Try exact ID match first (fastest + most specific)
+        PokeCard byId = controller.searchByIdHash(query);
+        if (byId != null) {
+            results.add(byId);
+        } 
+        // Step 2: If no ID match → do name search (partial)
+        else {
+            results = controller.searchByNameLinear(query);
+        }
+
+        // Optional: Try value if it's a number and no results yet
+        if (results.isEmpty()) {
+            try {
+                double val = Double.parseDouble(query);
+                PokeCard byValue = controller.searchByValueBinary(val);
+                if (byValue != null) {
+                    results.add(byValue);
+                }
+            } catch (NumberFormatException ignored) {
+            // not a number → ignore
+            }
+        }
+
+        if (results.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "No cards found for: " + query, 
+                "Search Result", 
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        refreshCardTable(results);
+    }//GEN-LAST:event_searchBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1638,7 +1911,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel Navbar2;
     private javax.swing.JButton RegisterNav;
     private javax.swing.JTextField SearchNav;
-    private javax.swing.JTextField SearchNav1;
     private javax.swing.JTextField SearchNav2;
     private javax.swing.JPanel ValuabelCard;
     private javax.swing.JPanel WelcomePanel;
@@ -1647,6 +1919,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel WelcomeText1;
     private javax.swing.JPanel addCardPanel;
     private javax.swing.JButton addNewCard;
+    private javax.swing.JButton btnChooseImage;
     private javax.swing.JButton cancelAddBtn;
     private javax.swing.JButton cancelAddBtn1;
     private javax.swing.JPanel cgPanel;
@@ -1660,7 +1933,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel editCardPanel;
     private javax.swing.JTextField idTF;
     private javax.swing.JTextField idTF1;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1680,7 +1952,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
@@ -1692,7 +1963,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
-    private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
@@ -1700,11 +1970,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel44;
-    private javax.swing.JLabel jLabel45;
-    private javax.swing.JLabel jLabel46;
-    private javax.swing.JLabel jLabel47;
-    private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel54;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -1713,14 +1980,14 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPasswordField jPasswordField2;
-    private javax.swing.JPasswordField jPasswordField3;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JLabel lblImagePreview;
     private javax.swing.JPanel loginPanel;
     private javax.swing.JButton logoutNav;
     private javax.swing.JButton logoutNav1;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JLabel mostRareCardLabel;
     private javax.swing.JTextField nameTF;
     private javax.swing.JTextField nameTF1;
     private javax.swing.JPanel parentPanel;
@@ -1728,14 +1995,27 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTable pokeTable;
     private javax.swing.JComboBox<String> rarityCB;
     private javax.swing.JComboBox<String> rarityCB1;
+    private javax.swing.JPanel recentCards;
+    private javax.swing.JPasswordField registerCPW;
+    private javax.swing.JPasswordField registerPW;
     private javax.swing.JPanel registerPanel;
+    private javax.swing.JTextField registerUN;
     private javax.swing.JButton saveCardBtn;
     private javax.swing.JButton saveCardBtn1;
+    private javax.swing.JButton searchBtn;
+    private javax.swing.JTextField searchTF;
+    private javax.swing.JComboBox<String> sortingCB;
     private javax.swing.JPanel totalCards;
+    private javax.swing.JLabel totalCardsLabel;
     private javax.swing.JPanel totalValue;
+    private javax.swing.JLabel totalValueLabel;
     private javax.swing.JComboBox<String> typeCB;
     private javax.swing.JComboBox<String> typeCB1;
+    private javax.swing.JButton undoDelete;
     private javax.swing.JTextField userTF;
+    private javax.swing.JLabel valueCardID;
+    private javax.swing.JLabel valueCardName;
+    private javax.swing.JLabel valueCardValue;
     private javax.swing.JTextField valueTF;
     private javax.swing.JTextField valueTF1;
     // End of variables declaration//GEN-END:variables
