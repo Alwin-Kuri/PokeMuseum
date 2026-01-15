@@ -31,7 +31,7 @@ public class CardController {
             createCard("PC002", "Pikachu", "Electric", "Common", "Mint", 120.00, "/utils/pikachu.png");
             createCard("PC003", "Mewtwo", "Psychic", "Ultra Rare", "Mint", 980.00, "/utils/mewtwo.png");
             createCard("PC004", "Blastoise", "Water", "Holo Rare", "Lightly Played", 480.00, "/utils/blastoise.png");
-            createCard("PC005", "Mega Venusaur eX", "Grass", "Holo Rare", "Near Mint", 320.00, "/utils/venusaur.png");
+            createCard("PC005", "Mega Venusaur eX", "Grass", "Holo Rare", "Near Mint", 320.00, "/utils/venasaur.png");
             createCard("PC006", "Bulbasaur", "Grass", "Rare", "Lightly Played", 100.00, "/utils/bulbasaur.png");
             createCard("PC007", "Mega Abomasnow eX", "Water", "Ultra Rare", "Near Mint", 520.00, "/utils/megaabo.png");
             createCard("PC008", "Mega Diancie eX", "Psychic", "Holo Rare", "Mint", 720.00, "/utils/diancie.png");

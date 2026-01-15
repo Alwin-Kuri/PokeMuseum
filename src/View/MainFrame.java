@@ -11,13 +11,23 @@ import Controller.CardController;
 import Model.PokeCard;
 import Model.CardCollection;
 import Model.User;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 public class MainFrame extends javax.swing.JFrame {
@@ -32,18 +42,27 @@ public class MainFrame extends javax.swing.JFrame {
     private String selectedImagePath = "";
     private boolean isLoggedIn = false;
     private String currentUserRole = "";
+    private String currentUsername = "";
+    private String currentUser = "";
+    private javax.swing.JList<String> recentList;
+    private javax.swing.JScrollPane recentScrollPane;
     
     //for card operations
     private CardController controller;
     
     public MainFrame() {
         initComponents();
-        
+
+
         //Initialize card controller for sample cards
         controller = new CardController();
-        
         //innitializing user for user data
         user = new User();
+        
+        //for featured cards in main panel
+        populateFeaturedCards();
+        refreshDashboard();
+        populateTopCards();
     }
     
     private void refreshCardTable(List<PokeCard> cardss) {
@@ -65,37 +84,190 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
     
-        /**
+    /**
      * Refreshes the dashboard stats
      */
     public void refreshDashboard(){
-        // 1. Total number of cards
-        int totalCards = controller.getTotalCards();
-        totalCardsLabel.setText(String.format("%.2f",totalCards));
+        //Total Cards
+        totalCardsLabel.setText(String.valueOf(controller.getTotalCards()));
 
-        // 2. Total value of inventory
-        double totalValueSum = controller.getTotalValue();
-        totalValueLabel.setText(String.format("%.2f", totalValueSum));
+        //Total Inventory Value
+        totalValueLabel.setText(String.format("$%.2f", controller.getTotalValue()));
 
-        // 3. Most valuable card (ID, Name, Value)
-        PokeCard mostVal = controller.getMostValuableCard();
-        if (mostVal != null) {
-            valueCardID.setText(mostVal.getId());
-            valueCardName.setText(mostVal.getName());
-            valueCardValue.setText(String.format("%.2f", mostVal.getValue()));
+        //Most Valuable Card
+        PokeCard mostValuable = controller.getMostValuableCard();
+        if (mostValuable != null) {
+            valueCardID.setText(mostValuable.getId());
+            valueCardName.setText(mostValuable.getName());
+            valueCardValue.setText(String.format("%.2f", mostValuable.getValue()));
         } else {
             valueCardID.setText("N/A");
             valueCardName.setText("N/A");
             valueCardValue.setText("$0.00");
         }
 
-        // 4. Most rare card (Name + Rarity)
+        //Most Rare Card
         PokeCard mostRare = controller.getMostRareCard();
         if (mostRare != null) {
-            mostRareCardLabel.setText(mostRare.getName() + " (" + mostRare.getRarity() + ")");
+            mostRareCardLabel.setText(String.format("Most Rare: %s (%s) - %s", 
+                mostRare.getName(), mostRare.getId(), mostRare.getRarity()));
         } else {
-            mostRareCardLabel.setText("N/A");
+            mostRareCardLabel.setText("No cards available");
         }
+
+        //Recent cards
+        recentCards.removeAll();
+
+        List<PokeCard> recent = controller.getRecentAdds();
+
+        if (recent.isEmpty()) {
+            javax.swing.JLabel empty = new javax.swing.JLabel("No recent cards yet", SwingConstants.CENTER);
+            empty.setFont(new java.awt.Font("Segoe UI", java.awt.Font.ITALIC, 14));
+            recentCards.add(empty);
+        } else {
+            for (PokeCard card : recent) {
+                javax.swing.JPanel cardEntry = new javax.swing.JPanel();
+                cardEntry.setLayout(new java.awt.GridLayout(4, 1, 0, 2));
+                cardEntry.setBackground(new java.awt.Color(240, 240, 255)); // light blue tint
+                cardEntry.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 1, 0, java.awt.Color.LIGHT_GRAY));
+
+                javax.swing.JLabel nameLabel = new javax.swing.JLabel("Name: " + card.getName());
+                nameLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+
+                javax.swing.JLabel idLabel = new javax.swing.JLabel("ID: " + card.getId());
+                idLabel.setFont(new java.awt.Font("Segoe UI", 0, 12));
+
+                javax.swing.JLabel valueLabel = new javax.swing.JLabel("Value: $" + String.format("%.2f", card.getValue()));
+                valueLabel.setFont(new java.awt.Font("Segoe UI", 0, 12));
+
+                javax.swing.JLabel rarityLabel = new javax.swing.JLabel("Rarity: " + card.getRarity());
+                rarityLabel.setFont(new java.awt.Font("Segoe UI", 0, 12));
+
+                cardEntry.add(nameLabel);
+                cardEntry.add(idLabel);
+                cardEntry.add(valueLabel);
+                cardEntry.add(rarityLabel);
+
+                recentCards.add(cardEntry);
+            }
+        }
+
+        recentCards.revalidate();
+        recentCards.repaint();
+
+
+        recentScroll.getVerticalScrollBar().setValue(0);
+    }
+    
+    private void populateFeaturedCards() {
+        featuredGrid.removeAll();
+
+        List<PokeCard> allCards = controller.readAllCards();
+        if (allCards.isEmpty()) {
+            JLabel emptyLabel = new JLabel("No featured cards available yet", SwingConstants.CENTER);
+            emptyLabel.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+            featuredGrid.add(emptyLabel);
+        } else {
+        // Show first 6 (or most valuable / random)
+        int maxShow = Math.min(6, allCards.size());
+            for (int i = 0; i < maxShow; i++) {
+                PokeCard card = allCards.get(i);
+
+                JPanel cardPanel = createFeaturedCardPanel(card);
+                featuredGrid.add(cardPanel);
+            }
+        }
+
+        featuredGrid.revalidate();
+        featuredGrid.repaint();
+    }
+
+    // Helper: creates one nice card panel
+    private JPanel createFeaturedCardPanel(PokeCard card) {
+        JPanel panel = new JPanel(new BorderLayout(0, 10));
+        panel.setBackground(new Color(255, 255, 255, 200)); // semi-transparent
+        panel.setBorder(BorderFactory.createLineBorder(new Color(255, 215, 0), 2));
+        panel.setPreferredSize(new Dimension(220, 320));
+
+        // Image
+        JLabel imgLabel = new JLabel();
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource(card.getImagePath()));
+            Image scaled = icon.getImage().getScaledInstance(200, 260, Image.SCALE_SMOOTH);
+            imgLabel.setIcon(new ImageIcon(scaled));
+        } catch (Exception e) {
+            imgLabel.setText("No Image");
+        }
+        imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Info text
+        JLabel info = new JLabel(
+            "<html><center><b>" + card.getName() + "</b><br>" +
+            card.getRarity() + "<br>$" + String.format("%.2f", card.getValue()) + "</center></html>",
+            SwingConstants.CENTER
+        );
+        info.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        panel.add(imgLabel, BorderLayout.CENTER);
+        panel.add(info, BorderLayout.SOUTH);
+
+        return panel;
+    }
+    
+    //Top cards for user panel
+    private void populateTopCards() {
+        topCardGrid.removeAll();
+
+        List<PokeCard> allCards = controller.readAllCards();
+        if (allCards.isEmpty()) {
+            JLabel emptyLabel = new JLabel("No top cards available yet", SwingConstants.CENTER);
+            emptyLabel.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+            topCardGrid.add(emptyLabel);
+        } else {
+        // Show first 6 (or most valuable / random)
+        int maxShow = Math.min(6, allCards.size());
+            for (int i = 0; i < maxShow; i++) {
+                PokeCard card = allCards.get(i);
+
+                JPanel cardPanel = createFeaturedCardPanel(card);
+                topCardGrid.add(cardPanel);
+            }
+        }
+
+        topCardGrid.revalidate();
+        topCardGrid.repaint();
+    }
+
+    // Helper: creates one nice card panel
+    private JPanel createTopCardPanel(PokeCard card) {
+        JPanel panel = new JPanel(new BorderLayout(0, 10));
+        panel.setBackground(new Color(255, 255, 255, 200)); // semi-transparent
+        panel.setBorder(BorderFactory.createLineBorder(new Color(255, 215, 0), 2));
+        panel.setPreferredSize(new Dimension(220, 320));
+
+        // Image
+        JLabel imgLabel = new JLabel();
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource(card.getImagePath()));
+            Image scaled = icon.getImage().getScaledInstance(200, 260, Image.SCALE_SMOOTH);
+            imgLabel.setIcon(new ImageIcon(scaled));
+        } catch (Exception e) {
+            imgLabel.setText("No Image");
+        }
+        imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Info text
+        JLabel info = new JLabel(
+            "<html><center><b>" + card.getName() + "</b><br>" +
+            card.getRarity() + "<br>$" + String.format("%.2f", card.getValue()) + "</center></html>",
+            SwingConstants.CENTER
+        );
+        info.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        panel.add(imgLabel, BorderLayout.CENTER);
+        panel.add(info, BorderLayout.SOUTH);
+
+        return panel;
     }
     
     /**
@@ -118,9 +290,12 @@ public class MainFrame extends javax.swing.JFrame {
         CollectionNav = new javax.swing.JButton();
         RegisterNav = new javax.swing.JButton();
         LoginNav = new javax.swing.JButton();
+        jLabel46 = new javax.swing.JLabel();
         WelcomePanel = new javax.swing.JPanel();
         WelcomeText = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        featuredScroll = new javax.swing.JScrollPane();
+        featuredGrid = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         loginPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -135,10 +310,11 @@ public class MainFrame extends javax.swing.JFrame {
         LogoName1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         dashHomePanel = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
+        refreshDashboard = new javax.swing.JButton();
+        jLabel27 = new javax.swing.JLabel();
+        rareCards = new javax.swing.JPanel();
         jLabel43 = new javax.swing.JLabel();
         mostRareCardLabel = new javax.swing.JLabel();
-        recentCards = new javax.swing.JPanel();
         totalCards = new javax.swing.JPanel();
         jLabel40 = new javax.swing.JLabel();
         jLabel41 = new javax.swing.JLabel();
@@ -159,6 +335,8 @@ public class MainFrame extends javax.swing.JFrame {
         SearchNav2 = new javax.swing.JTextField();
         CollectionNav2 = new javax.swing.JButton();
         logoutNav = new javax.swing.JButton();
+        recentScroll = new javax.swing.JScrollPane();
+        recentCards = new javax.swing.JPanel();
         WelcomePanel1 = new javax.swing.JPanel();
         WelcomeText1 = new javax.swing.JLabel();
         jLabel39 = new javax.swing.JLabel();
@@ -236,6 +414,23 @@ public class MainFrame extends javax.swing.JFrame {
         cancelAddBtn1 = new javax.swing.JButton();
         saveCardBtn1 = new javax.swing.JButton();
         jLabel36 = new javax.swing.JLabel();
+        userPanel = new javax.swing.JPanel();
+        WelcomeText2 = new javax.swing.JLabel();
+        WelcomeText3 = new javax.swing.JLabel();
+        Navbar3 = new javax.swing.JPanel();
+        LogoName5 = new javax.swing.JLabel();
+        CardsNav3 = new javax.swing.JButton();
+        HomeNav3 = new javax.swing.JButton();
+        jLabel45 = new javax.swing.JLabel();
+        SearchNav1 = new javax.swing.JTextField();
+        CollectionNav3 = new javax.swing.JButton();
+        LoginNav3 = new javax.swing.JButton();
+        seeAllBtn = new javax.swing.JButton();
+        topScroll = new javax.swing.JScrollPane();
+        topCardGrid = new javax.swing.JPanel();
+        jLabel38 = new javax.swing.JLabel();
+        userCards = new javax.swing.JPanel();
+        userCollection = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(980, 550));
@@ -321,9 +516,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(SearchNav, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(33, 33, 33)
                 .addComponent(RegisterNav)
-                .addGap(30, 30, 30)
+                .addGap(18, 18, 18)
                 .addComponent(LoginNav)
-                .addGap(148, 148, 148))
+                .addGap(160, 160, 160))
         );
         NavbarLayout.setVerticalGroup(
             NavbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -344,6 +539,11 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         mainPanel.add(Navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 980, 60));
+
+        jLabel46.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 18)); // NOI18N
+        jLabel46.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel46.setText("Featured Cards");
+        mainPanel.add(jLabel46, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 380, -1, -1));
 
         WelcomePanel.setBackground(new java.awt.Color(255, 255, 255));
         WelcomePanel.setOpaque(false);
@@ -378,10 +578,15 @@ public class MainFrame extends javax.swing.JFrame {
 
         mainPanel.add(WelcomePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 420, 160));
 
+        featuredGrid.setLayout(new java.awt.GridLayout(2, 3, 25, 25));
+        featuredScroll.setViewportView(featuredGrid);
+
+        mainPanel.add(featuredScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 402, 960, 140));
+
         jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/allpokemons.png"))); // NOI18N
         jLabel9.setMinimumSize(new java.awt.Dimension(800, 550));
         jLabel9.setPreferredSize(new java.awt.Dimension(700, 550));
-        mainPanel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 990, -1));
+        mainPanel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 990, 550));
 
         parentPanel.add(mainPanel, "Home");
 
@@ -478,30 +683,45 @@ public class MainFrame extends javax.swing.JFrame {
         dashHomePanel.setName(""); // NOI18N
         dashHomePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
+        refreshDashboard.setBackground(new java.awt.Color(204, 204, 255));
+        refreshDashboard.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 12)); // NOI18N
+        refreshDashboard.setText("Refresh Dashboard");
+        refreshDashboard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshDashboardActionPerformed(evt);
+            }
+        });
+        dashHomePanel.add(refreshDashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 510, -1, -1));
+
+        jLabel27.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 14)); // NOI18N
+        jLabel27.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel27.setText("Recently Added Cards");
+        dashHomePanel.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 140, -1, -1));
+
+        rareCards.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
 
         jLabel43.setFont(new java.awt.Font("Berlin Sans FB Demi", 0, 12)); // NOI18N
         jLabel43.setText("Most Rare Card in Inventory");
 
         mostRareCardLabel.setText("Charizard Holo Rare");
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
+        javax.swing.GroupLayout rareCardsLayout = new javax.swing.GroupLayout(rareCards);
+        rareCards.setLayout(rareCardsLayout);
+        rareCardsLayout.setHorizontalGroup(
+            rareCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(rareCardsLayout.createSequentialGroup()
+                .addGroup(rareCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(rareCardsLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel43))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addGroup(rareCardsLayout.createSequentialGroup()
                         .addGap(27, 27, 27)
                         .addComponent(mostRareCardLabel)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+        rareCardsLayout.setVerticalGroup(
+            rareCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(rareCardsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel43)
                 .addGap(18, 18, 18)
@@ -509,22 +729,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
-        dashHomePanel.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 410, 170, 90));
-
-        recentCards.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/gengar.png")))); // NOI18N
-
-        javax.swing.GroupLayout recentCardsLayout = new javax.swing.GroupLayout(recentCards);
-        recentCards.setLayout(recentCardsLayout);
-        recentCardsLayout.setHorizontalGroup(
-            recentCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        recentCardsLayout.setVerticalGroup(
-            recentCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        dashHomePanel.add(recentCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, 870, 110));
+        dashHomePanel.add(rareCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 410, 210, 90));
 
         totalCards.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
 
@@ -556,7 +761,7 @@ public class MainFrame extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(valueCardValue))
                         .addComponent(jLabel40)))
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         totalCardsLayout.setVerticalGroup(
             totalCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -574,7 +779,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        dashHomePanel.add(totalCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 410, 240, 90));
+        dashHomePanel.add(totalCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 410, 260, 90));
 
         totalValue.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
 
@@ -623,14 +828,13 @@ public class MainFrame extends javax.swing.JFrame {
         ValuabelCardLayout.setHorizontalGroup(
             ValuabelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ValuabelCardLayout.createSequentialGroup()
+                .addGap(34, 34, 34)
                 .addGroup(ValuabelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel44)
                     .addGroup(ValuabelCardLayout.createSequentialGroup()
-                        .addGap(34, 34, 34)
-                        .addComponent(totalValueLabel))
-                    .addGroup(ValuabelCardLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel44)))
-                .addContainerGap(20, Short.MAX_VALUE))
+                        .addGap(23, 23, 23)
+                        .addComponent(totalValueLabel)))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
         ValuabelCardLayout.setVerticalGroup(
             ValuabelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -642,7 +846,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        dashHomePanel.add(ValuabelCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 180, 90));
+        dashHomePanel.add(ValuabelCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 410, 220, 90));
 
         Navbar2.setBackground(new java.awt.Color(0, 0, 0, 100));
         Navbar2.setOpaque(false);
@@ -663,6 +867,11 @@ public class MainFrame extends javax.swing.JFrame {
         HomeNav2.setBackground(new java.awt.Color(102, 255, 255));
         HomeNav2.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
         HomeNav2.setText("Home");
+        HomeNav2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HomeNav2ActionPerformed(evt);
+            }
+        });
 
         jLabel37.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/PokeLogo.png"))); // NOI18N
 
@@ -705,9 +914,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(CollectionNav2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addComponent(SearchNav2, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(111, 111, 111)
+                .addGap(99, 99, 99)
                 .addComponent(logoutNav)
-                .addGap(37, 37, 37))
+                .addGap(49, 49, 49))
         );
         Navbar2Layout.setVerticalGroup(
             Navbar2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -728,6 +937,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         dashHomePanel.add(Navbar2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 980, 60));
 
+        recentCards.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/gengar.png")))); // NOI18N
+        recentCards.setLayout(new java.awt.GridLayout(4, 3, 25, 25));
+        recentScroll.setViewportView(recentCards);
+
+        dashHomePanel.add(recentScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, 880, 190));
+
         WelcomePanel1.setBackground(new java.awt.Color(255, 255, 255));
         WelcomePanel1.setOpaque(false);
 
@@ -747,12 +962,12 @@ public class MainFrame extends javax.swing.JFrame {
         WelcomePanel1Layout.setVerticalGroup(
             WelcomePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(WelcomePanel1Layout.createSequentialGroup()
-                .addContainerGap(22, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(WelcomeText1)
-                .addGap(116, 116, 116))
+                .addGap(267, 267, 267))
         );
 
-        dashHomePanel.add(WelcomePanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 420, 160));
+        dashHomePanel.add(WelcomePanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 420, 40));
 
         jLabel39.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg"))); // NOI18N
         jLabel39.setMinimumSize(new java.awt.Dimension(800, 550));
@@ -956,7 +1171,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(searchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(searchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addComponent(logoutNav1)
                 .addGap(37, 37, 37))
         );
@@ -1017,6 +1232,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         sortingCB.setFont(new java.awt.Font("Bauhaus 93", 0, 12)); // NOI18N
         sortingCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sort Collection", "By Name", "By Value", "By Rarity" }));
+        sortingCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortingCBActionPerformed(evt);
+            }
+        });
 
         pokeTable.setBackground(new java.awt.Color(204, 204, 255));
         pokeTable.setFont(new java.awt.Font("Nirmala Text Semilight", 0, 12)); // NOI18N
@@ -1411,6 +1631,147 @@ public class MainFrame extends javax.swing.JFrame {
 
         parentPanel.add(collectionPanel, "card6");
 
+        userPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        WelcomeText2.setFont(new java.awt.Font("Gill Sans MT", 1, 18)); // NOI18N
+        WelcomeText2.setForeground(new java.awt.Color(255, 255, 255));
+        WelcomeText2.setText("Our Top Cards");
+        userPanel.add(WelcomeText2, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 190, -1, -1));
+
+        WelcomeText3.setFont(new java.awt.Font("Gill Sans MT", 1, 24)); // NOI18N
+        WelcomeText3.setForeground(new java.awt.Color(255, 255, 255));
+        WelcomeText3.setText("Welcome To Pokémon Card Museum");
+        userPanel.add(WelcomeText3, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 120, -1, -1));
+
+        Navbar3.setBackground(new java.awt.Color(0, 0, 0, 100));
+        Navbar3.setOpaque(false);
+
+        LogoName5.setBackground(new java.awt.Color(255, 255, 255));
+        LogoName5.setFont(new java.awt.Font("Eras Light ITC", 1, 24)); // NOI18N
+        LogoName5.setText("<html><span style=\"color:white;\">Poké</span><span style=\"color:red;\">Museum</span>\n");
+        LogoName5.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+
+        CardsNav3.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        CardsNav3.setText("Cards");
+        CardsNav3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CardsNav3ActionPerformed(evt);
+            }
+        });
+
+        HomeNav3.setBackground(new java.awt.Color(102, 255, 255));
+        HomeNav3.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        HomeNav3.setText("Home");
+
+        jLabel45.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/PokeLogo.png"))); // NOI18N
+
+        SearchNav1.setFont(new java.awt.Font("Rockwell Extra Bold", 0, 12)); // NOI18N
+        SearchNav1.setForeground(new java.awt.Color(153, 153, 153));
+        SearchNav1.setText("Search...");
+
+        CollectionNav3.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        CollectionNav3.setText("Collection");
+        CollectionNav3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CollectionNav3ActionPerformed(evt);
+            }
+        });
+
+        LoginNav3.setBackground(new java.awt.Color(255, 102, 102));
+        LoginNav3.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        LoginNav3.setForeground(new java.awt.Color(255, 255, 255));
+        LoginNav3.setText("Logout");
+        LoginNav3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LoginNav3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout Navbar3Layout = new javax.swing.GroupLayout(Navbar3);
+        Navbar3.setLayout(Navbar3Layout);
+        Navbar3Layout.setHorizontalGroup(
+            Navbar3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Navbar3Layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel45)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(LogoName5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(100, 100, 100)
+                .addComponent(HomeNav3)
+                .addGap(18, 18, 18)
+                .addComponent(CardsNav3)
+                .addGap(18, 18, 18)
+                .addComponent(CollectionNav3)
+                .addGap(34, 34, 34)
+                .addComponent(SearchNav1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(68, 68, 68)
+                .addComponent(LoginNav3)
+                .addContainerGap(68, Short.MAX_VALUE))
+        );
+        Navbar3Layout.setVerticalGroup(
+            Navbar3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Navbar3Layout.createSequentialGroup()
+                .addGroup(Navbar3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(Navbar3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LogoName5, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CardsNav3)
+                        .addComponent(HomeNav3)
+                        .addComponent(SearchNav1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CollectionNav3)
+                        .addComponent(LoginNav3))
+                    .addGroup(Navbar3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel45)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        userPanel.add(Navbar3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 980, 60));
+
+        seeAllBtn.setBackground(new java.awt.Color(0, 153, 153));
+        seeAllBtn.setFont(new java.awt.Font("Gill Sans Ultra Bold Condensed", 0, 14)); // NOI18N
+        seeAllBtn.setForeground(new java.awt.Color(255, 255, 255));
+        seeAllBtn.setText("See All");
+        userPanel.add(seeAllBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 220, -1, -1));
+
+        topScroll.setBorder(javax.swing.BorderFactory.createMatteBorder(3, 3, 3, 3, new javax.swing.ImageIcon(getClass().getResource("/utils/blastoise.png")))); // NOI18N
+
+        topCardGrid.setLayout(new java.awt.GridLayout(2, 3, 25, 25));
+        topScroll.setViewportView(topCardGrid);
+
+        userPanel.add(topScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 252, 960, 290));
+
+        jLabel38.setIcon(new javax.swing.ImageIcon(getClass().getResource("/utils/watah.jpg"))); // NOI18N
+        jLabel38.setPreferredSize(new java.awt.Dimension(980, 550));
+        userPanel.add(jLabel38, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 980, -1));
+
+        parentPanel.add(userPanel, "card7");
+
+        javax.swing.GroupLayout userCardsLayout = new javax.swing.GroupLayout(userCards);
+        userCards.setLayout(userCardsLayout);
+        userCardsLayout.setHorizontalGroup(
+            userCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 980, Short.MAX_VALUE)
+        );
+        userCardsLayout.setVerticalGroup(
+            userCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 550, Short.MAX_VALUE)
+        );
+
+        parentPanel.add(userCards, "card8");
+
+        javax.swing.GroupLayout userCollectionLayout = new javax.swing.GroupLayout(userCollection);
+        userCollection.setLayout(userCollectionLayout);
+        userCollectionLayout.setHorizontalGroup(
+            userCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 980, Short.MAX_VALUE)
+        );
+        userCollectionLayout.setVerticalGroup(
+            userCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 550, Short.MAX_VALUE)
+        );
+
+        parentPanel.add(userCollection, "card9");
+
         getContentPane().add(parentPanel, java.awt.BorderLayout.CENTER);
 
         pack();
@@ -1418,42 +1779,69 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void LoginNav1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNav1ActionPerformed
         String username = userTF.getText().trim();
-        String password = new String(passwordField.getPassword());
+        String password = new String(passwordField.getPassword()).trim();
 
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, 
-                "Please enter both username and password!", 
-                "Empty Fields", JOptionPane.WARNING_MESSAGE);
+                "Please enter username and password!", 
+                "Login Error", 
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        // Validate login using your User model
         if (user.validateLogin(username, password)) {
-            isLoggedIn = true;
-            currentUserRole = user.getUserRole(username);
-        
-            JOptionPane.showMessageDialog(this, 
-                "Welcome, " + username, 
-                "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+            // Get the users role
+            String role = user.getUserRole(username);
 
-        //successful login = go to dashboard
-        parentPanel.removeAll();
-        parentPanel.add(dashHomePanel);
-        parentPanel.revalidate();
-        parentPanel.repaint();
+            if (role == null) {
+                JOptionPane.showMessageDialog(this, "Role not found for user!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Store current user info
+            currentUsername = username;
+            currentUserRole = role;
+            User currentUser = user.getUserByUsername(username);
+
+            passwordField.setText("");
+
+            // Redirect based on role
+            parentPanel.removeAll();
+
+            if ("admin".equalsIgnoreCase(role)) {
+                // Admin -> Dashboard
+                parentPanel.add(dashHomePanel);
+                refreshDashboard();  // update stats, recent cards, etc.
+                JOptionPane.showMessageDialog(this, "Welcome Admin: " + username, "Login Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Regular user -> User panel (inventory/browse)
+                parentPanel.add(userPanel);
+                JOptionPane.showMessageDialog(this, "Welcome " + username + "!", "Login Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            parentPanel.revalidate();
+            parentPanel.repaint();
+
+            // Optional: Hide login/register buttons in navbar, show logout
+            LoginNav.setVisible(false);
+            RegisterNav.setVisible(false);
+            logoutNav.setVisible(true);
 
         } else {
             JOptionPane.showMessageDialog(this, 
                 "Invalid username or password!", 
-                "Login Failed", JOptionPane.ERROR_MESSAGE);
+                "Login Failed", 
+                JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_LoginNav1ActionPerformed
 
     private void CardsNavActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardsNavActionPerformed
         ImageIcon pokeIcon = new ImageIcon(getClass().getResource("/utils/PokeLogo.png"));
         JOptionPane.showMessageDialog(this, 
-            "We are sorry, this function is not added yet", 
-            "-PokeMuseum", 
-            JOptionPane.INFORMATION_MESSAGE,
+            "Please login first to access the collection!", 
+            "Access Denied", 
+            JOptionPane.WARNING_MESSAGE,
             pokeIcon);
     }//GEN-LAST:event_CardsNavActionPerformed
 
@@ -1558,7 +1946,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_CollectionNav1ActionPerformed
 
     private void logoutNav1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutNav1ActionPerformed
-    ImageIcon pokeIcon = new ImageIcon(getClass().getResource("/utils/PokeLogo.png"));
+        ImageIcon pokeIcon = new ImageIcon(getClass().getResource("/utils/PokeLogo.png"));
         int confirm = JOptionPane.showConfirmDialog(this, 
             "Are you sure you want to logout?", 
             "Logout Confirmation", 
@@ -1567,14 +1955,22 @@ public class MainFrame extends javax.swing.JFrame {
             pokeIcon);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            isLoggedIn = false; //reset login state
+            isLoggedIn = false;
             currentUserRole = "";
-
+            currentUser = null;
+            currentUsername = "";
+            //user = yes = logout
+        
+            //switch back to Home
             parentPanel.removeAll();
-            parentPanel.add(mainPanel); //back to public home
+            parentPanel.add(mainPanel);
             parentPanel.revalidate();
             parentPanel.repaint();
-
+            
+            LoginNav.setVisible(true);
+            RegisterNav.setVisible(true);
+            logoutNav.setVisible(false);
+        
             JOptionPane.showMessageDialog(this, "You have been logged out successfully!", 
                 "Logged Out", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -1621,6 +2017,7 @@ public class MainFrame extends javax.swing.JFrame {
         parentPanel.add(dashHomePanel);
         parentPanel.repaint();
         parentPanel.revalidate();
+        refreshDashboard();
     }//GEN-LAST:event_HomeNav1ActionPerformed
 
     private void idTF1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idTF1ActionPerformed
@@ -1714,6 +2111,8 @@ public class MainFrame extends javax.swing.JFrame {
         if (confirm == JOptionPane.YES_OPTION) {
             isLoggedIn = false;
             currentUserRole = "";
+            currentUser = null;
+            currentUsername = "";
             //user = yes = logout
         
             //switch back to Home
@@ -1721,11 +2120,14 @@ public class MainFrame extends javax.swing.JFrame {
             parentPanel.add(mainPanel);
             parentPanel.revalidate();
             parentPanel.repaint();
+            
+            LoginNav.setVisible(true);
+            RegisterNav.setVisible(true);
+            logoutNav.setVisible(false);
         
             JOptionPane.showMessageDialog(this, "You have been logged out successfully!", 
                 "Logged Out", JOptionPane.INFORMATION_MESSAGE);
         }
-        //If no or cancel it stays on the current screen
     }//GEN-LAST:event_logoutNavActionPerformed
 
     private void btnChooseImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseImageActionPerformed
@@ -1863,6 +2265,84 @@ public class MainFrame extends javax.swing.JFrame {
         refreshCardTable(results);
     }//GEN-LAST:event_searchBtnActionPerformed
 
+    private void refreshDashboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshDashboardActionPerformed
+        refreshDashboard();
+    }//GEN-LAST:event_refreshDashboardActionPerformed
+
+    private void HomeNav2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeNav2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_HomeNav2ActionPerformed
+
+    private void sortingCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortingCBActionPerformed
+        String selectedSort = (String) sortingCB.getSelectedItem();
+        List<PokeCard> sortedCards;
+
+        switch (selectedSort) {
+            case "By Value":
+                sortedCards = controller.getCardsSortedByValue();
+                break;
+
+            case "By Name":
+                sortedCards = controller.getCardsSortedByName();
+                break;
+
+            case "By Rarity":
+                sortedCards = controller.getCardsSortedByRarity();
+                break;
+
+            default: // Sorting/None - Original Order
+                sortedCards = controller.readAllCards();
+                break;
+        }
+
+        //Refresh table with sorted list
+        refreshCardTable(sortedCards);
+
+        JOptionPane.showMessageDialog(this, 
+        "Table sorted by: " + selectedSort, 
+        "Sorting Applied", 
+        JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_sortingCBActionPerformed
+
+    private void CardsNav3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardsNav3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CardsNav3ActionPerformed
+
+    private void CollectionNav3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CollectionNav3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CollectionNav3ActionPerformed
+
+    private void LoginNav3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginNav3ActionPerformed
+        ImageIcon pokeIcon = new ImageIcon(getClass().getResource("/utils/PokeLogo.png"));
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "Are you sure you want to logout?", 
+            "Logout Confirmation", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.QUESTION_MESSAGE,
+            pokeIcon);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            isLoggedIn = false;
+            currentUserRole = "";
+            currentUser = null;
+            currentUsername = "";
+            //user = yes = logout
+        
+            //switch back to Home
+            parentPanel.removeAll();
+            parentPanel.add(mainPanel);
+            parentPanel.revalidate();
+            parentPanel.repaint();
+            
+            LoginNav.setVisible(true);
+            RegisterNav.setVisible(true);
+            logoutNav.setVisible(false);
+        
+            JOptionPane.showMessageDialog(this, "You have been logged out successfully!", 
+                "Logged Out", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_LoginNav3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1892,31 +2372,40 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton CardsNav;
     private javax.swing.JButton CardsNav1;
     private javax.swing.JButton CardsNav2;
+    private javax.swing.JButton CardsNav3;
     private javax.swing.JButton CollectionNav;
     private javax.swing.JButton CollectionNav1;
     private javax.swing.JButton CollectionNav2;
+    private javax.swing.JButton CollectionNav3;
     private javax.swing.JButton HomeNav;
     private javax.swing.JButton HomeNav1;
     private javax.swing.JButton HomeNav2;
+    private javax.swing.JButton HomeNav3;
     private javax.swing.JButton LoginNav;
     private javax.swing.JButton LoginNav1;
     private javax.swing.JButton LoginNav2;
+    private javax.swing.JButton LoginNav3;
     private javax.swing.JLabel LogoName;
     private javax.swing.JLabel LogoName1;
     private javax.swing.JLabel LogoName2;
     private javax.swing.JLabel LogoName3;
     private javax.swing.JLabel LogoName4;
+    private javax.swing.JLabel LogoName5;
     private javax.swing.JPanel Navbar;
     private javax.swing.JPanel Navbar1;
     private javax.swing.JPanel Navbar2;
+    private javax.swing.JPanel Navbar3;
     private javax.swing.JButton RegisterNav;
     private javax.swing.JTextField SearchNav;
+    private javax.swing.JTextField SearchNav1;
     private javax.swing.JTextField SearchNav2;
     private javax.swing.JPanel ValuabelCard;
     private javax.swing.JPanel WelcomePanel;
     private javax.swing.JPanel WelcomePanel1;
     private javax.swing.JLabel WelcomeText;
     private javax.swing.JLabel WelcomeText1;
+    private javax.swing.JLabel WelcomeText2;
+    private javax.swing.JLabel WelcomeText3;
     private javax.swing.JPanel addCardPanel;
     private javax.swing.JButton addNewCard;
     private javax.swing.JButton btnChooseImage;
@@ -1931,6 +2420,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton deleteCard;
     private javax.swing.JButton editCard;
     private javax.swing.JPanel editCardPanel;
+    private javax.swing.JPanel featuredGrid;
+    private javax.swing.JScrollPane featuredScroll;
     private javax.swing.JTextField idTF;
     private javax.swing.JTextField idTF1;
     private javax.swing.JLabel jLabel1;
@@ -1952,6 +2443,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
@@ -1963,6 +2455,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
+    private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
@@ -1970,6 +2463,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel44;
+    private javax.swing.JLabel jLabel45;
+    private javax.swing.JLabel jLabel46;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel54;
     private javax.swing.JLabel jLabel6;
@@ -1980,7 +2475,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblImagePreview;
     private javax.swing.JPanel loginPanel;
@@ -1993,9 +2487,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel parentPanel;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JTable pokeTable;
+    private javax.swing.JPanel rareCards;
     private javax.swing.JComboBox<String> rarityCB;
     private javax.swing.JComboBox<String> rarityCB1;
     private javax.swing.JPanel recentCards;
+    private javax.swing.JScrollPane recentScroll;
+    private javax.swing.JButton refreshDashboard;
     private javax.swing.JPasswordField registerCPW;
     private javax.swing.JPasswordField registerPW;
     private javax.swing.JPanel registerPanel;
@@ -2004,7 +2501,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton saveCardBtn1;
     private javax.swing.JButton searchBtn;
     private javax.swing.JTextField searchTF;
+    private javax.swing.JButton seeAllBtn;
     private javax.swing.JComboBox<String> sortingCB;
+    private javax.swing.JPanel topCardGrid;
+    private javax.swing.JScrollPane topScroll;
     private javax.swing.JPanel totalCards;
     private javax.swing.JLabel totalCardsLabel;
     private javax.swing.JPanel totalValue;
@@ -2012,6 +2512,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> typeCB;
     private javax.swing.JComboBox<String> typeCB1;
     private javax.swing.JButton undoDelete;
+    private javax.swing.JPanel userCards;
+    private javax.swing.JPanel userCollection;
+    private javax.swing.JPanel userPanel;
     private javax.swing.JTextField userTF;
     private javax.swing.JLabel valueCardID;
     private javax.swing.JLabel valueCardName;

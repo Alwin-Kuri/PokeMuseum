@@ -260,7 +260,7 @@ public class CardCollection {
     }
     
     // Sorting methods
-    private static final String[] RARITIES = {"Common", "Uncommon", "Rare", "Holo Rare", "Ultra Rare", "Legendary", "Legendary+"};
+    private static final String[] RARITIES = {"Common", "Uncommon", "Rare", "Holo Rare", "Ultra Rare", "Legendary", "Legendary +"};
     private static final String[] CONDITIONS = {"Damaged", "Heavily Played", "Moderately Played", "Lightly Played", "Near Mint"};
     
     private int getRarityIndex(String rarity) {
