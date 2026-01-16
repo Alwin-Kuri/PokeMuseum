@@ -118,7 +118,7 @@ public class MainFrame extends javax.swing.JFrame {
         //Most Rare Card
         PokeCard mostRare = controller.getMostRareCard();
         if (mostRare != null) {
-            mostRareCardLabel.setText(String.format("Most Rare: %s (%s) - %s", 
+            mostRareCardLabel.setText(String.format("%s (%s) - %s", 
                 mostRare.getName(), mostRare.getId(), mostRare.getRarity()));
         } else {
             mostRareCardLabel.setText("No cards available");
@@ -1147,12 +1147,12 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(rareCardsLayout.createSequentialGroup()
                 .addGroup(rareCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(rareCardsLayout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGap(27, 27, 27)
                         .addComponent(jLabel43))
                     .addGroup(rareCardsLayout.createSequentialGroup()
-                        .addGap(27, 27, 27)
+                        .addContainerGap()
                         .addComponent(mostRareCardLabel)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         rareCardsLayout.setVerticalGroup(
             rareCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1164,7 +1164,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
-        dashHomePanel.add(rareCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 410, 210, 90));
+        dashHomePanel.add(rareCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 410, 240, 90));
 
         totalCards.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
 
@@ -1196,7 +1196,7 @@ public class MainFrame extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(valueCardValue))
                         .addComponent(jLabel40)))
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
         totalCardsLayout.setVerticalGroup(
             totalCardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1214,7 +1214,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        dashHomePanel.add(totalCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 410, 260, 90));
+        dashHomePanel.add(totalCards, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 410, 250, 90));
 
         totalValue.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
 
@@ -1248,7 +1248,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        dashHomePanel.add(totalValue, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 410, 160, 90));
+        dashHomePanel.add(totalValue, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 410, 160, 90));
 
         ValuabelCard.setBorder(javax.swing.BorderFactory.createMatteBorder(4, 4, 4, 4, new javax.swing.ImageIcon(getClass().getResource("/utils/collectionsbg.jpeg")))); // NOI18N
 
