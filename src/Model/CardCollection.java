@@ -25,7 +25,7 @@ public class CardCollection {
     public CardCollection() {
         mainCollection = new LinkedList<>();//For main CRUD operations
         recentAdds = new CardQueue(15);
-        undoStack = new CardStack();
+        undoStack = new CardStack(50);
         idMap = new HashMap<>();
     }
     /**
@@ -89,8 +89,9 @@ public class CardCollection {
             throw new IllegalArgumentException("Card ID not found for deletion");
         }
         // Push to undo stack
-        if (!undoStack.isFull()) {
+        if (undoStack != null) {
             undoStack.push(toDelete);
+            System.out.println("DEBUG: Pushed deleted card to undo stack: " + toDelete.getName());
         }
         // Remove from recent if present (manual check since queue no remove)
         CardQueue temp = new CardQueue(15);
@@ -114,6 +115,23 @@ public class CardCollection {
         PokeCard restored = undoStack.pop();
         addCard(restored); //add back to main collection
         return restored;
+    }
+    
+    public boolean canUndoDelete() {
+        boolean can = !undoStack.isEmpty();
+        System.out.println("DEBUG: canUndoDelete() = " + can + " (stack size: " + undoStack.size() + ")");
+        return can;
+    }
+    
+    /**
+    * Peeks at the top of undo stack without popping
+     * @return last deleted card or null
+     */
+    public PokeCard peekLastDeleted() {
+        if (undoStack.isEmpty()) {
+            return null;
+        }
+        return undoStack.peek();
     }
 
     /**

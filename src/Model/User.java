@@ -8,6 +8,7 @@ package Model;
  *
  * @author Kuri
  */
+import java.util.Iterator;
 import java.util.LinkedList;
 public class User {
     private LinkedList<User> users = new LinkedList<>();
@@ -64,10 +65,20 @@ public class User {
 
     /**
      * Removes a card from inventory by ID.
-     * @param id ID to remove.
+     * @param cardId ID to remove.
      */
-    public void removeFromInventory(String id) {
-        inventory.removeIf(c -> c.getId().equals(id));
+    public boolean removeFromInventory(String cardId) {
+        boolean removed = false;
+        Iterator<PokeCard> iterator = inventory.iterator();
+        while (iterator.hasNext()) {
+            PokeCard c = iterator.next();
+            if (c.getId().equals(cardId)) {
+                iterator.remove();
+                removed = true;
+                break;
+            }
+        }
+        return removed;
     }
 
     /**

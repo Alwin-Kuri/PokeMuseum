@@ -100,6 +100,18 @@ public class CardController {
     public List<PokeCard> readAllCards() {
         return collection.getAllCards();
     }
+    
+    public PokeCard undoDelete(){
+        return collection.undoDelete();
+    }
+    
+    public boolean canUndoDelete() {
+        return collection.canUndoDelete();
+    }
+    
+    public PokeCard peekLastDeletedCard() {
+        return collection.peekLastDeleted();
+    }
 
     //Dashboard / Stats Methods
 

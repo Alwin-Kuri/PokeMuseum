@@ -17,10 +17,11 @@ public class CardStack {
     
     private ArrayList<PokeCard> elements;
     private int top; // index of the top element
-    private int capacity; //size
+    private final int capacity; //size
 
-    public CardStack() {
-        elements = new ArrayList<>();
+    public CardStack(int capacity) {
+        this.capacity = capacity;
+        elements = new ArrayList<>(capacity);
         top = -1;
     }
     
